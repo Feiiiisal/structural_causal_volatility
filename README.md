@@ -4,7 +4,7 @@ MScFE 690 capstone project.
 
 **Title:** Structural Causal Volatility Networks for Adaptive Risk Management in Equity Portfolios: Evidence Across Developed and Emerging Markets
 
-**Group:** Halkano Molu Guracha, Feisel Hassan Ali, Tushar Gahlot
+**Group:** Halkano Molu Guracha, Feisal Ali Hassan, Tushar Gahlot
 
 ## What we are testing
 
