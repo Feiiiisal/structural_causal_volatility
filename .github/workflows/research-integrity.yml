@@ -1,4 +1,4 @@
-name: Research integrity checks
+name: Tests
 
 on:
   push:
@@ -12,35 +12,29 @@ on:
       - ".github/workflows/research-integrity.yml"
   pull_request:
     branches: [main]
-    paths:
-      - "catboost_dagma/**"
-      - "src/**"
-      - "tests/**"
-      - "requirements.txt"
-      - "pyproject.toml"
-      - ".github/workflows/research-integrity.yml"
   workflow_dispatch:
+
+concurrency:
+  group: tests-${{ github.ref }}
+  cancel-in-progress: true
 
 permissions:
   contents: read
 
 jobs:
-  integrity:
+  test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
           cache: "pip"
 
-      - name: Install dependencies
-        run: |
+      - run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           pip install -e .
 
-      - name: Run research-integrity regression tests
-        run: pytest -q catboost_dagma/tests/test_research_integrity_patch.py
+      - run: pytest -q catboost_dagma/tests/test_research_integrity_patch.py
