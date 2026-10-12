@@ -1,0 +1,599 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2240 1140" width="2240" height="1140" style="background: #f8f9fa; font-family: 'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;">
+  <defs>
+    <!-- Embedded Styles -->
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500;600;700&amp;family=Geist:wght@300;400;500;600;700&amp;family=Instrument+Serif:ital@0;1&amp;display=swap');
+      
+      .title-serif { font-family: 'Instrument Serif', Georgia, serif; }
+      .mono { font-family: 'Geist Mono', monospace; }
+      
+      .connector { fill: none; stroke: #57606a; stroke-width: 2px; stroke-linecap: round; stroke-linejoin: round; }
+      .connector-coral { fill: none; stroke: #eb6c36; stroke-width: 2.5px; stroke-linecap: round; stroke-linejoin: round; }
+      .connector-purple { fill: none; stroke: #8250df; stroke-width: 2px; stroke-linecap: round; stroke-linejoin: round; }
+      .connector-green { fill: none; stroke: #1a7f37; stroke-width: 2.5px; stroke-linecap: round; stroke-linejoin: round; }
+      .connector-blue { fill: none; stroke: #0969da; stroke-width: 2px; stroke-linecap: round; stroke-linejoin: round; }
+      
+      .badge-bg { fill: #ffffff; stroke: #d0d7de; stroke-width: 1px; rx: 4px; filter: drop-shadow(0 1px 3px rgba(0,0,0,0.06)); }
+      .badge-text { font-family: 'Geist Mono', monospace; font-size: 9.5px; font-weight: 600; fill: #1e2530; text-anchor: middle; dominant-baseline: central; }
+      .badge-text-coral { font-family: 'Geist Mono', monospace; font-size: 9.5px; font-weight: 600; fill: #eb6c36; text-anchor: middle; dominant-baseline: central; }
+      .badge-text-purple { font-family: 'Geist Mono', monospace; font-size: 9.5px; font-weight: 600; fill: #8250df; text-anchor: middle; dominant-baseline: central; }
+      .badge-text-green { font-family: 'Geist Mono', monospace; font-size: 9.5px; font-weight: 600; fill: #1a7f37; text-anchor: middle; dominant-baseline: central; }
+      .badge-text-blue { font-family: 'Geist Mono', monospace; font-size: 9.5px; font-weight: 600; fill: #0969da; text-anchor: middle; dominant-baseline: central; }
+      
+      .card { fill: #ffffff; stroke: #d0d7de; stroke-width: 1px; rx: 8px; filter: drop-shadow(0 3px 10px rgba(27,31,36,0.05)); }
+      .card-focal { fill: #ffffff; stroke: #eb6c36; stroke-width: 1.5px; rx: 8px; filter: drop-shadow(0 4px 14px rgba(235,108,54,0.1)); }
+      .card-green { fill: #ffffff; stroke: #1a7f37; stroke-width: 1.5px; rx: 8px; filter: drop-shadow(0 4px 14px rgba(26,127,55,0.08)); }
+      .card-purple { fill: #ffffff; stroke: #8250df; stroke-width: 1.5px; rx: 8px; filter: drop-shadow(0 3px 10px rgba(130,80,223,0.06)); }
+      .card-blue { fill: #ffffff; stroke: #0969da; stroke-width: 1.5px; rx: 8px; filter: drop-shadow(0 4px 14px rgba(9,105,218,0.08)); }
+      
+      .phase-box { fill: rgba(125,133,144,0.015); stroke: #d0d7de; stroke-width: 1px; stroke-dasharray: 4 4; rx: 12px; }
+      
+      .chip { fill: #f3f4f6; stroke: #d0d7de; stroke-width: 1px; rx: 4px; }
+      .chip-coral { fill: #fff4ee; stroke: #f8c2ab; stroke-width: 1px; rx: 4px; }
+      .chip-green { fill: #dafbe1; stroke: #1a7f37; stroke-width: 1px; rx: 4px; }
+      .chip-purple { fill: #fbefff; stroke: #8250df; stroke-width: 1px; rx: 4px; }
+      .chip-blue { fill: #ddf4ff; stroke: #54aeff; stroke-width: 1px; rx: 4px; }
+      .chip-amber { fill: #fff8c5; stroke: #d4a72c; stroke-width: 1px; rx: 4px; }
+    </style>
+
+    <!-- Arrowhead Markers -->
+    <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#57606a"/>
+    </marker>
+    <marker id="arr-coral" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#eb6c36"/>
+    </marker>
+    <marker id="arr-purple" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#8250df"/>
+    </marker>
+    <marker id="arr-green" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#1a7f37"/>
+    </marker>
+    <marker id="arr-blue" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#0969da"/>
+    </marker>
+  </defs>
+
+  <!-- Background Grid Pattern -->
+  <g opacity="0.3">
+    <pattern id="dot-grid" width="24" height="24" patternUnits="userSpaceOnUse">
+      <circle cx="2" cy="2" r="1" fill="#d8dee4" />
+    </pattern>
+    <rect width="2240" height="1140" fill="url(#dot-grid)" />
+  </g>
+
+  <!-- ======================================================================== -->
+  <!-- HEADER & BLUEPRINT BANNER                                                -->
+  <!-- ======================================================================== -->
+  <g transform="translate(30, 20)">
+    <text x="0" y="24" class="title-serif" font-size="27" font-weight="400" fill="#1e2530">
+      Causal Graph Volatility &amp; Contagion-Pruning Architecture
+    </text>
+    <rect x="616" y="8" width="146" height="20" rx="10" fill="#fff4ee" stroke="#f8c2ab" />
+    <text x="689" y="22" class="mono" font-size="9.5" font-weight="700" fill="#eb6c36" text-anchor="middle">RESEARCH BLUEPRINT</text>
+    
+    <text x="0" y="46" font-size="11.5" fill="#57606a">
+      Initial Methodological Blueprint · Multi-Factor Residualization · Continuous Causal Discovery · Regime Breaks · Contagion-Pruned Alpha
+    </text>
+
+    <!-- Scope / Phase Navigation Pills -->
+    <g transform="translate(1500, 0)">
+      <rect x="0" y="4" width="680" height="32" rx="16" fill="#ffffff" stroke="#d0d7de" stroke-width="1" filter="drop-shadow(0 2px 6px rgba(0,0,0,0.03))"/>
+      <circle cx="20" cy="20" r="5" fill="#eb6c36"/>
+      <text x="32" y="24" class="mono" font-size="10" font-weight="600" fill="#1e2530">Phase I: Residualize</text>
+      <circle cx="185" cy="20" r="5" fill="#8250df"/>
+      <text x="197" y="24" class="mono" font-size="10" font-weight="600" fill="#1e2530">Phase II: Dual Topology</text>
+      <circle cx="370" cy="20" r="5" fill="#d4a72c"/>
+      <text x="382" y="24" class="mono" font-size="10" font-weight="600" fill="#1e2530">Phase III: ML Fusion</text>
+      <circle cx="535" cy="20" r="5" fill="#1a7f37"/>
+      <text x="547" y="24" class="mono" font-size="10" font-weight="600" fill="#1e2530">Phase IV: Strategy</text>
+    </g>
+  </g>
+
+  <!-- ======================================================================== -->
+  <!-- COLUMN 1: PHASE I · SYSTEMATIC FACTOR RESIDUALIZATION                     -->
+  <!-- ======================================================================== -->
+  <rect class="phase-box" x="30" y="88" width="450" height="1000" />
+  <rect x="55" y="77" width="400" height="22" rx="11" fill="#ffffff" stroke="#d0d7de" />
+  <text x="255" y="92" class="mono" font-size="9" font-weight="700" fill="#57606a" text-anchor="middle">
+    PHASE I · SYSTEMATIC FACTOR ORTHOGONALIZATION (FEEDBACK A)
+  </text>
+
+  <!-- Node 1: Unified Data & Factor Ingestion -->
+  <g transform="translate(55, 124)">
+    <rect class="card" x="0" y="0" width="400" height="272" />
+    <text x="16" y="22" class="mono" font-size="9" font-weight="700" fill="#0969da">STAGE 01 · DATA &amp; FACTOR INGESTION</text>
+    <text x="384" y="22" class="mono" font-size="9" fill="#8c959f" text-anchor="end">SRC-01 &amp; 02</text>
+    <text x="16" y="44" class="title-serif" font-size="18" fill="#1e2530">Dual Asset &amp; Macro Ingestion</text>
+    <text x="16" y="62" font-size="10.5" fill="#57606a">Simultaneous ingestion of equity return series and systemic risk factors.</text>
+    
+    <!-- Sub-Section A: Equities Panel -->
+    <rect x="16" y="74" width="368" height="74" rx="4" fill="#f8f9fa" stroke="#e1e4e8"/>
+    <text x="26" y="92" class="mono" font-size="9.5" font-weight="700" fill="#1e2530">1. Cross-Sectional Asset Universe (R_{i,t})</text>
+    <text x="26" y="108" font-size="9.5" fill="#57606a">Daily asset price and return panel spanning primary GICS sectors.</text>
+    <text x="26" y="124" class="mono" font-size="8.5" fill="#0969da">Tech, Financials, Healthcare, Consumer, Industrial, Energy</text>
+    <text x="26" y="140" font-size="9" fill="#eb6c36">Problem: Raw correlation confounds firm links with market co-movement.</text>
+
+    <!-- Sub-Section B: Macro Factors -->
+    <rect x="16" y="156" width="368" height="68" rx="4" fill="#f8f9fa" stroke="#e1e4e8"/>
+    <text x="26" y="174" class="mono" font-size="9.5" font-weight="700" fill="#1e2530">2. Fama-French 3-Factor Benchmark (F_t)</text>
+    <text x="26" y="190" font-size="9.5" fill="#57606a">Exogenous macro controls capturing broad cross-sectional variance.</text>
+    <text x="26" y="206" class="mono" font-size="8.5" fill="#0969da">Mkt-RF (Market)  |  SMB (Size)  |  HML (Value)  |  RF (T-Bill)</text>
+
+    <!-- Bottom Chips -->
+    <g transform="translate(16, 234)">
+      <rect class="chip" x="0" y="0" width="114" height="22"/>
+      <text x="57" y="15" class="mono" font-size="9" fill="#1e2530" text-anchor="middle">R_{i,t} ∈ ℝ^(T×N)</text>
+      <rect class="chip" x="122" y="0" width="124" height="22"/>
+      <text x="184" y="15" class="mono" font-size="9" fill="#1e2530" text-anchor="middle">FF3 Factor Panel</text>
+      <rect class="chip-coral" x="254" y="0" width="114" height="22"/>
+      <text x="311" y="15" class="mono" font-size="9" font-weight="700" fill="#eb6c36" text-anchor="middle">Raw Confounding</text>
+    </g>
+  </g>
+
+  <!-- Connector: Node 1 down to Node 2 -->
+  <path class="connector" d="M 255 396 L 255 444" marker-end="url(#arr)"/>
+  <rect class="badge-bg" x="175" y="411" width="160" height="18"/>
+  <text class="badge-text" x="255" y="420">Raw R_t &amp; Factors F_t</text>
+
+  <!-- Node 2: Multivariate Factor Residualizer (Focal) -->
+  <g transform="translate(55, 444)">
+    <rect class="card-focal" x="0" y="0" width="400" height="270" />
+    <text x="16" y="22" class="mono" font-size="9" font-weight="700" fill="#eb6c36">STAGE 02 · FACTOR ORTHOGONALIZATION</text>
+    <text x="384" y="22" class="mono" font-size="9" fill="#8c959f" text-anchor="end">RESID-01</text>
+    <text x="16" y="44" class="title-serif" font-size="19" fill="#1e2530">Vectorized OLS Factor Residualizer</text>
+    <text x="16" y="62" font-size="10" fill="#0969da" font-style="italic">"Residualize returns on Fama-French factors before learning graph."</text>
+    
+    <!-- Mathematical Formulation -->
+    <rect x="16" y="72" width="368" height="34" rx="4" fill="#fff4ee" stroke="#f8c2ab" stroke-width="0.5"/>
+    <text x="200" y="93" class="mono" font-size="9" font-weight="700" fill="#eb6c36" text-anchor="middle">
+      R_{i,t} - R_{f,t} = α_i + β_i^T F_t + ε_{i,t},  Cov(ε_{i,t}, F_t) = 0
+    </text>
+
+    <!-- Methodology & Purpose -->
+    <text x="16" y="124" font-size="10.5" fill="#1e2530" font-weight="600">Proposed Engineering Protocol:</text>
+    <text x="16" y="142" font-size="10" fill="#57606a">
+      • Regress cross-sectional asset returns against market, size, and value.
+    </text>
+    <text x="16" y="158" font-size="10" fill="#57606a">
+      • Extract residual innovations ε_{i,t} strictly independent of systematic beta.
+    </text>
+    <text x="16" y="174" font-size="10" fill="#57606a">
+      • Residual graph captures true economic interconnectedness, not market tides.
+    </text>
+
+    <g transform="translate(16, 192)">
+      <rect class="chip-coral" x="0" y="0" width="116" height="22"/>
+      <text x="58" y="15" class="mono" font-size="9" font-weight="700" fill="#eb6c36" text-anchor="middle">Cov(ε, F) ≡ 0</text>
+      <rect class="chip-coral" x="124" y="0" width="130" height="22"/>
+      <text x="189" y="15" class="mono" font-size="9" font-weight="700" fill="#eb6c36" text-anchor="middle">Panel: ε ∈ ℝ^(T×N)</text>
+      <rect class="chip-green" x="262" y="0" width="106" height="22"/>
+      <text x="315" y="15" class="mono" font-size="9" font-weight="700" fill="#1a7f37" text-anchor="middle">Beta-Invariant</text>
+    </g>
+    <text x="16" y="242" font-size="10" fill="#57606a">
+      Guarantees graph edges represent genuine transmission channels.
+    </text>
+  </g>
+
+  <!-- Column 1 Footer / Methodological Milestone -->
+  <g transform="translate(55, 744)">
+    <rect class="card" x="0" y="0" width="400" height="208" style="border-left: 3px solid #0969da;" />
+    <text x="16" y="22" class="mono" font-size="9" font-weight="700" fill="#0969da">PHASE I METHODOLOGICAL GOAL</text>
+    <text x="16" y="44" class="title-serif" font-size="17" fill="#1e2530">Spurious Co-Movement Mitigation</text>
+    <text x="16" y="64" font-size="10" fill="#57606a">
+      Standard financial networks suffer from dense pseudo-edges because
+    </text>
+    <text x="16" y="78" font-size="10" fill="#57606a">
+      a rising tide lifts all assets. By stripping systematic factor returns:
+    </text>
+    <text x="16" y="100" class="mono" font-size="9" fill="#1e2530">
+      • Surviving edges represent genuine inter-firm causal risk.
+    </text>
+    <text x="16" y="120" class="mono" font-size="9" fill="#1e2530">
+      • Residual correlation drops significantly, unmasking topology.
+    </text>
+    <text x="16" y="140" class="mono" font-size="9" fill="#1e2530">
+      • Establishes pristine input for non-linear causal discovery.
+    </text>
+    <text x="16" y="160" class="mono" font-size="9" fill="#1a7f37" font-weight="700">
+      • Directly resolves instructor feedback requirement (a).
+    </text>
+  </g>
+
+  <!-- ======================================================================== -->
+  <!-- COLUMN 2: PHASE II · CONTINUOUS CAUSAL DISCOVERY & BENCHMARK AUDIT       -->
+  <!-- ======================================================================== -->
+  <rect class="phase-box" x="580" y="88" width="450" height="1000" />
+  <rect x="605" y="77" width="400" height="22" rx="11" fill="#ffffff" stroke="#d0d7de" />
+  <text x="805" y="92" class="mono" font-size="9" font-weight="700" fill="#57606a" text-anchor="middle">
+    PHASE II · CAUSAL DISCOVERY &amp; BENCHMARK AUDIT (FEEDBACK B)
+  </text>
+
+  <!-- Node 3A: Graphical LASSO Precision Benchmark -->
+  <g transform="translate(605, 124)">
+    <rect class="card-purple" x="0" y="0" width="400" height="236" />
+    <text x="16" y="22" class="mono" font-size="9" font-weight="700" fill="#8250df">STAGE 03 · BENCHMARK BASELINE</text>
+    <text x="384" y="22" class="mono" font-size="9" fill="#8c959f" text-anchor="end">GLASSO-01</text>
+    <text x="16" y="44" class="title-serif" font-size="18" fill="#1e2530">Graphical LASSO Precision (Θ)</text>
+    <text x="16" y="62" font-size="10.5" fill="#57606a">Inverse covariance estimator encoding conditional Gaussian independence.</text>
+    
+    <!-- Formulation -->
+    <rect x="16" y="72" width="368" height="32" rx="4" fill="#fbefff" stroke="#8250df" stroke-width="0.5"/>
+    <text x="200" y="92" class="mono" font-size="9" font-weight="600" fill="#8250df" text-anchor="middle">
+      min_{Θ≻0} { tr(SΘ) - ln det(Θ) + α ||Θ||_{1, off} }
+    </text>
+
+    <!-- Characteristics -->
+    <text x="16" y="122" font-size="10.5" fill="#1e2530" font-weight="600">Baseline Characteristics:</text>
+    <text x="16" y="138" font-size="10" fill="#57606a">• Undirected Gaussian conditional independence topology (Θ = Σ^-1).</text>
+    <text x="16" y="154" font-size="10" fill="#57606a">• Enforces strict edge symmetry: Θ_{ij} = Θ_{ji} (No causal directionality).</text>
+    <text x="16" y="170" font-size="10" fill="#57606a">• Assumes normality; misses asymmetric shock propagation &amp; fat tails.</text>
+
+    <g transform="translate(16, 186)">
+      <rect class="chip-purple" x="0" y="0" width="116" height="20"/>
+      <text x="58" y="14" class="mono" font-size="9" fill="#8250df" text-anchor="middle">Θ = Σ^-1 Symmetric</text>
+      <rect class="chip-purple" x="124" y="0" width="116" height="20"/>
+      <text x="182" y="14" class="mono" font-size="9" fill="#8250df" text-anchor="middle">L1 Regularized</text>
+      <rect class="chip-purple" x="248" y="0" width="120" height="20"/>
+      <text x="308" y="14" class="mono" font-size="9" fill="#8250df" text-anchor="middle">Undirected Graph</text>
+    </g>
+  </g>
+
+  <!-- Node 3B: Student-t Deep DYNOTEARS (Focal DAGMA) -->
+  <g transform="translate(605, 384)">
+    <rect class="card-focal" x="0" y="0" width="400" height="276" />
+    <text x="16" y="22" class="mono" font-size="9" font-weight="700" fill="#eb6c36">STAGE 04 · NON-LINEAR CONTINUOUS CAUSAL DISCOVERY</text>
+    <text x="384" y="22" class="mono" font-size="9" fill="#8c959f" text-anchor="end">DAGMA-01</text>
+    <text x="16" y="44" class="title-serif" font-size="19" fill="#1e2530">Student-t Deep DYNOTEARS</text>
+    <text x="16" y="62" font-size="10.5" fill="#57606a">Continuous non-linear causal discovery with log-det acyclicity constraint.</text>
+    
+    <!-- Mathematical Formulations -->
+    <rect x="16" y="72" width="368" height="48" rx="4" fill="#fff4ee" stroke="#f8c2ab" stroke-width="0.5"/>
+    <text x="200" y="90" class="mono" font-size="9" font-weight="700" fill="#eb6c36" text-anchor="middle">
+      h(W) = -ln det(sI - W ∘ W) + d ln s = 0  (Exact Acyclicity)
+    </text>
+    <text x="200" y="108" class="mono" font-size="9" font-weight="700" fill="#eb6c36" text-anchor="middle">
+      min_{W,A,ν} L_{Student-t} + λ1(|W|1 + |A|1)  s.t. h(W)=0
+    </text>
+
+    <!-- Key Proposed Capabilities -->
+    <text x="16" y="138" font-size="10.5" fill="#1e2530" font-weight="600">Proposed Methodological Innovations:</text>
+    <text x="16" y="154" font-size="10" fill="#57606a">• Student-t Log-Likelihood loss accommodates heavy tails (degrees of freedom ν).</text>
+    <text x="16" y="170" font-size="10" fill="#57606a">• Simultaneous estimation of contemporaneous (W) and lagged (A) directed graphs.</text>
+    <text x="16" y="186" font-size="10" fill="#57606a">• Neural MLP equations capture complex non-linear financial interactions.</text>
+
+    <g transform="translate(16, 202)">
+      <rect class="chip-coral" x="0" y="0" width="116" height="22"/>
+      <text x="58" y="15" class="mono" font-size="9" font-weight="700" fill="#eb6c36" text-anchor="middle">Directed DAG (W, A)</text>
+      <rect class="chip-coral" x="124" y="0" width="124" height="22"/>
+      <text x="186" y="15" class="mono" font-size="9" font-weight="700" fill="#eb6c36" text-anchor="middle">Fat Tails (Student-t)</text>
+      <rect class="chip-green" x="256" y="0" width="112" height="22"/>
+      <text x="312" y="15" class="mono" font-size="9" font-weight="700" fill="#1a7f37" text-anchor="middle">Exact Acyclicity</text>
+    </g>
+    <text x="16" y="254" font-size="10" fill="#57606a">
+      Discovers true directed transmitters of volatility shocks across network.
+    </text>
+  </g>
+
+  <!-- Node 4: Empirical Non-Redundancy Validator -->
+  <g transform="translate(605, 684)">
+    <rect class="card" x="0" y="0" width="400" height="268" />
+    <text x="16" y="22" class="mono" font-size="9" font-weight="700" fill="#0969da">STAGE 05 &amp; 06 · NON-REDUNDANCY AUDIT</text>
+    <text x="384" y="22" class="mono" font-size="9" fill="#8c959f" text-anchor="end">ORTHO-01</text>
+    <text x="16" y="44" class="title-serif" font-size="18" fill="#1e2530">Empirical Non-Redundancy Validator</text>
+    <text x="16" y="62" font-size="9.5" fill="#0969da" font-style="italic">"Reframe as empirical non-redundancy — benchmark against precision matrix."</text>
+    
+    <!-- Hypothesis Testing Blueprint Table -->
+    <g transform="translate(16, 72)">
+      <rect x="0" y="0" width="368" height="92" rx="4" fill="#f8f9fa" stroke="#d0d7de"/>
+      <text x="12" y="18" class="mono" font-size="9" font-weight="700" fill="#57606a">Test Metric</text>
+      <text x="165" y="18" class="mono" font-size="9" font-weight="700" fill="#57606a">Hypothesis / Criteria</text>
+      <text x="310" y="18" class="mono" font-size="9" font-weight="700" fill="#57606a">Target Status</text>
+      <line x1="8" y1="26" x2="360" y2="26" stroke="#e1e4e8"/>
+      
+      <text x="12" y="42" class="mono" font-size="9" fill="#1e2530">In-Degree vs Precision</text>
+      <text x="165" y="42" class="mono" font-size="9" fill="#57606a">r(d_in, d_prec) ≈ 0</text>
+      <text x="310" y="42" class="mono" font-size="9" font-weight="700" fill="#1a7f37">Non-Redundant</text>
+      
+      <text x="12" y="60" class="mono" font-size="9" fill="#1e2530">Out-Degree vs Precision</text>
+      <text x="165" y="60" class="mono" font-size="9" fill="#57606a">r(d_out, d_prec) ≈ 0</text>
+      <text x="310" y="60" class="mono" font-size="9" font-weight="700" fill="#1a7f37">Non-Redundant</text>
+      
+      <text x="12" y="78" class="mono" font-size="9" fill="#1e2530">Eigenvector Centrality</text>
+      <text x="165" y="78" class="mono" font-size="9" fill="#57606a">r(eig_dag, eig_prec) ≈ 0</text>
+      <text x="310" y="78" class="mono" font-size="9" font-weight="700" fill="#1a7f37">Non-Redundant</text>
+    </g>
+
+    <!-- Multi-Collinearity Test Box -->
+    <rect class="chip-blue" x="16" y="176" width="368" height="24"/>
+    <text x="200" y="192" class="mono" font-size="9" font-weight="700" fill="#0969da" text-anchor="middle">
+      Collinearity Audit: Target VIF &lt; 5.0 Across All Graph Features
+    </text>
+
+    <text x="16" y="222" font-size="10" fill="#57606a">
+      Empirically validates DAGMA captures unique asymmetric causality.
+    </text>
+    <text x="16" y="240" font-size="10" fill="#0969da" font-weight="600">
+      Softens mathematical claims to empirical evidence per instructor feedback (b).
+    </text>
+  </g>
+
+  <!-- Connectors within Col 2 to Node 4 -->
+  <path class="connector-purple" d="M 805 360 L 805 384" />
+  <path class="connector-coral" d="M 805 660 L 805 684" marker-end="url(#arr-coral)"/>
+
+  <!-- ======================================================================== -->
+  <!-- COLUMN 3: PHASE III · REGIME BREAKS & ML TABULAR FUSION                  -->
+  <!-- ======================================================================== -->
+  <rect class="phase-box" x="1130" y="88" width="450" height="1000" />
+  <rect x="1155" y="77" width="400" height="22" rx="11" fill="#ffffff" stroke="#d0d7de" />
+  <text x="1355" y="92" class="mono" font-size="9" font-weight="700" fill="#57606a" text-anchor="middle">
+    PHASE III · REGIME BREAK TRACKING &amp; CATBOOST FUSION
+  </text>
+
+  <!-- Node 5: Frobenius Causal Drift & Structural Break Detection -->
+  <g transform="translate(1155, 124)">
+    <rect class="card" x="0" y="0" width="400" height="248" />
+    <text x="16" y="22" class="mono" font-size="9" font-weight="700" fill="#9a6700">STAGE 07 · STRUCTURAL BREAK MONITOR</text>
+    <text x="384" y="22" class="mono" font-size="9" fill="#8c959f" text-anchor="end">BREAK-01</text>
+    <text x="16" y="44" class="title-serif" font-size="18" fill="#1e2530">Frobenius Causal Drift (ΔW_t)</text>
+    <text x="16" y="62" font-size="10.5" fill="#57606a">Monitors dynamic topological dislocation across rolling DAGMA windows.</text>
+    
+    <!-- Mathematical Formulation -->
+    <rect x="16" y="72" width="368" height="34" rx="4" fill="#fff8c5" stroke="#9a6700" stroke-width="0.5"/>
+    <text x="200" y="93" class="mono" font-size="9" font-weight="700" fill="#9a6700" text-anchor="middle">
+      ΔW_t = ||W_t - W_{t-1}||_F = [ ∑_{i,j} (W_{t,ij} - W_{t-1,ij})² ]^{1/2} &gt; τ_{crit}
+    </text>
+
+    <!-- Break Detection Protocol -->
+    <text x="16" y="124" font-size="10.5" fill="#1e2530" font-weight="600">Regime Detection Protocol:</text>
+    <text x="16" y="140" font-size="10" fill="#57606a">• Roll 60-day window to compute continuous topological velocity vector ΔW_t.</text>
+    <text x="16" y="156" font-size="10" fill="#57606a">• Calibrate empirical threshold τ_crit (e.g. 95th percentile historical dislocation).</text>
+    <text x="16" y="172" font-size="10" fill="#57606a">• Detect systemic regime shifts prior to market-wide volatility explosions.</text>
+
+    <g transform="translate(16, 184)">
+      <rect class="chip-amber" x="0" y="0" width="116" height="22"/>
+      <text x="58" y="15" class="mono" font-size="9" font-weight="700" fill="#9a6700" text-anchor="middle">Dynamic Drift ΔW_t</text>
+      <rect class="chip-amber" x="124" y="0" width="124" height="22"/>
+      <text x="186" y="15" class="mono" font-size="9" font-weight="700" fill="#9a6700" text-anchor="middle">Threshold τ_crit (95%)</text>
+      <rect class="chip-coral" x="256" y="0" width="112" height="22"/>
+      <text x="312" y="15" class="mono" font-size="9" font-weight="700" fill="#eb6c36" text-anchor="middle">Early Warning</text>
+    </g>
+    <text x="16" y="230" font-size="10" fill="#57606a">
+      Flags institutional balance sheet stress ahead of price declines.
+    </text>
+  </g>
+
+  <!-- Connectors: Node 5 down to Node 6 -->
+  <path class="connector" d="M 1355 372 L 1355 408" marker-end="url(#arr)"/>
+  <rect class="badge-bg" x="1307" y="381" width="96" height="18"/>
+  <text class="badge-text" x="1355" y="390">Drift &amp; Breaks</text>
+
+  <!-- Node 6: GPU CatBoost Tabular Regressor -->
+  <g transform="translate(1155, 408)">
+    <rect class="card-blue" x="0" y="0" width="400" height="336" />
+    <text x="16" y="22" class="mono" font-size="9" font-weight="700" fill="#0969da">STAGE 08 · GRADIENT BOOSTING TABULAR FUSION</text>
+    <text x="384" y="22" class="mono" font-size="9" fill="#8c959f" text-anchor="end">ML-01</text>
+    <text x="16" y="44" class="title-serif" font-size="19" fill="#1e2530">GPU CatBoost Volatility Regressor</text>
+    <text x="16" y="62" font-size="10.5" fill="#57606a">Chronological forecasting of next-day forward volatility (σ_{i, t+1}).</text>
+    
+    <!-- Tabular Feature Engineering Specification -->
+    <g transform="translate(16, 74)">
+      <rect x="0" y="0" width="368" height="126" rx="4" fill="#f8f9fa" stroke="#d0d7de"/>
+      <text x="12" y="17" class="mono" font-size="9.5" font-weight="700" fill="#1e2530">Proposed Feature Architecture</text>
+      <text x="356" y="17" class="mono" font-size="9" font-weight="600" fill="#0969da" text-anchor="end">Feature Category</text>
+      <line x1="8" y1="25" x2="360" y2="25" stroke="#e1e4e8"/>
+
+      <text x="12" y="40" class="mono" font-size="9" fill="#eb6c36" font-weight="600">days_since_last_break</text>
+      <text x="356" y="40" class="mono" font-size="8.5" fill="#57606a" text-anchor="end">Regime Transition Recency</text>
+
+      <text x="12" y="58" class="mono" font-size="9" fill="#eb6c36" font-weight="600">causal_drift (ΔW_t)</text>
+      <text x="356" y="58" class="mono" font-size="8.5" fill="#57606a" text-anchor="end">Topological Velocity</text>
+
+      <text x="12" y="76" class="mono" font-size="9" fill="#eb6c36" font-weight="600">dagma_out_deg / in_deg</text>
+      <text x="356" y="76" class="mono" font-size="8.5" fill="#57606a" text-anchor="end">Causal Contagion Centrality</text>
+
+      <text x="12" y="94" class="mono" font-size="9" fill="#0969da">vol_realized_20d / 60d</text>
+      <text x="356" y="94" class="mono" font-size="8.5" fill="#57606a" text-anchor="end">Historical Price Variance</text>
+
+      <text x="12" y="112" class="mono" font-size="9" fill="#8250df">glasso_precision_deg</text>
+      <text x="356" y="112" class="mono" font-size="8.5" fill="#57606a" text-anchor="end">Undirected Baseline</text>
+    </g>
+
+    <!-- Planned Validation Protocol -->
+    <text x="16" y="220" font-size="10.5" fill="#1e2530" font-weight="600">Chronological Cross-Validation Plan:</text>
+    <text x="16" y="236" font-size="10" fill="#57606a">• Strict walk-forward out-of-sample splits preventing lookahead bias.</text>
+    <text x="16" y="252" font-size="10" fill="#57606a">• Feature ablation protocol: quantify marginal gain of causal features.</text>
+    <text x="16" y="268" font-size="10" fill="#57606a">• Symmetric tree splitting handles complex tabular interactions robustly.</text>
+
+    <g transform="translate(16, 280)">
+      <rect class="chip-blue" x="0" y="0" width="116" height="22"/>
+      <text x="58" y="15" class="mono" font-size="9" font-weight="700" fill="#0969da" text-anchor="middle">Target: σ_{i, t+1}</text>
+      <rect class="chip-coral" x="124" y="0" width="124" height="22"/>
+      <text x="186" y="15" class="mono" font-size="9" font-weight="700" fill="#eb6c36" text-anchor="middle">Ablation Protocol</text>
+      <rect class="chip-green" x="256" y="0" width="112" height="22"/>
+      <text x="312" y="15" class="mono" font-size="9" font-weight="700" fill="#1a7f37" text-anchor="middle">Walk-Forward CV</text>
+    </g>
+    <text x="16" y="322" font-size="10" fill="#57606a">
+      Outputs dynamic asset-level volatility forecasts for risk targeting.
+    </text>
+  </g>
+
+  <!-- Column 3 Footer -->
+  <g transform="translate(1155, 776)">
+    <rect class="card" x="0" y="0" width="400" height="176" style="border-left: 3px solid #eb6c36;" />
+    <text x="16" y="22" class="mono" font-size="9" font-weight="700" fill="#eb6c36">PHASE III MACHINE LEARNING OBJECTIVE</text>
+    <text x="16" y="44" class="title-serif" font-size="17" fill="#1e2530">Causal Signal Fusion &amp; Ablation</text>
+    <text x="16" y="64" font-size="10" fill="#57606a">
+      Combines continuous network topology with gradient boosted decision trees to test:
+    </text>
+    <text x="16" y="86" class="mono" font-size="9" fill="#1e2530">
+      • Do DAGMA causal features improve volatility prediction RMSE?
+    </text>
+    <text x="16" y="106" class="mono" font-size="9" fill="#1e2530">
+      • Does structural break tracking provide lead-time on crash risk?
+    </text>
+    <text x="16" y="126" class="mono" font-size="9" fill="#1e2530">
+      • How do causal features rank against classical momentum &amp; vol?
+    </text>
+  </g>
+
+  <!-- ======================================================================== -->
+  <!-- COLUMN 4: PHASE IV · STRATEGY EXECUTION & COMPARATIVE EVALUATION         -->
+  <!-- ======================================================================== -->
+  <rect class="phase-box" x="1680" y="88" width="450" height="1000" />
+  <rect x="1705" y="77" width="400" height="22" rx="11" fill="#ffffff" stroke="#d0d7de" />
+  <text x="1905" y="92" class="mono" font-size="9" font-weight="700" fill="#57606a" text-anchor="middle">
+    PHASE IV · STRATEGY EXECUTION &amp; BENCHMARK EVALUATION
+  </text>
+
+  <!-- Node 7: Causal Contagion-Pruning Strategy Engine -->
+  <g transform="translate(1705, 124)">
+    <rect class="card-green" x="0" y="0" width="400" height="336" />
+    <text x="16" y="22" class="mono" font-size="9" font-weight="700" fill="#1a7f37">STAGE 09 · DOWNSTREAM RISK EXECUTION</text>
+    <text x="384" y="22" class="mono" font-size="9" fill="#8c959f" text-anchor="end">ALPHA-01</text>
+    <text x="16" y="44" class="title-serif" font-size="19" fill="#1e2530">Causal Contagion-Pruning Strategy</text>
+    <text x="16" y="62" font-size="10.5" fill="#57606a">Topological hub elimination during regime breaks with causal drift ratchet.</text>
+    
+    <!-- Strategy Math Formulations -->
+    <rect x="16" y="72" width="368" height="50" rx="4" fill="#dafbe1" stroke="#1a7f37" stroke-width="0.5"/>
+    <text x="200" y="91" class="mono" font-size="9" font-weight="700" fill="#1a7f37" text-anchor="middle">
+      λ_t = λ_max - (λ_max - λ_min) · norm_drift_t  (λ ∈ [2.5, 4.0])
+    </text>
+    <text x="200" y="110" class="mono" font-size="9" font-weight="600" fill="#1a7f37" text-anchor="middle">
+      StopLevel_t = max(StopLevel_{t-1}, P_t [1 - λ_t (σ_P / √252)])
+    </text>
+
+    <!-- Strategy Operational Rules -->
+    <text x="16" y="140" font-size="10.5" fill="#1e2530" font-weight="600">Three-Layer Risk Management Protocol:</text>
+    
+    <g transform="translate(16, 150)">
+      <rect class="chip-green" x="0" y="0" width="368" height="22"/>
+      <text x="184" y="15" class="mono" font-size="8.5" font-weight="700" fill="#1a7f37" text-anchor="middle">
+        1. Hub Pruning: Zero out top-2 out-degree nodes (k_out = ∑_j |W_ij|)
+      </text>
+      
+      <rect class="chip-green" x="0" y="28" width="368" height="22"/>
+      <text x="184" y="43" class="mono" font-size="8.5" font-weight="700" fill="#1a7f37" text-anchor="middle">
+        2. Causal Ratchet: Tighten stops as Frobenius drift ΔW_t expands
+      </text>
+      
+      <rect class="chip-green" x="0" y="56" width="368" height="22"/>
+      <text x="184" y="71" class="mono" font-size="8.5" font-weight="700" fill="#1a7f37" text-anchor="middle">
+        3. Re-Entry Filter: Price confirmation P_t &gt; MA_20 &amp; Positive Momentum
+      </text>
+    </g>
+
+    <text x="16" y="252" font-size="10.5" fill="#1e2530" font-weight="600">Core Strategic Objective:</text>
+    <text x="16" y="268" font-size="9.5" fill="#57606a">
+      Participates uninhibited during sustained bull regimes while rapidly
+    </text>
+    <text x="16" y="282" font-size="9.5" fill="#57606a">
+      rotating to cash upon structural contagion detection.
+    </text>
+    <text x="16" y="306" font-size="9.5" fill="#1a7f37" font-weight="600">
+      Engineered to solve the classical buy-and-hold drawdown vulnerability.
+    </text>
+  </g>
+
+  <!-- Connector: Node 7 down to Node 8 -->
+  <path class="connector-green" d="M 1905 460 L 1905 492" marker-end="url(#arr-green)"/>
+  <rect class="badge-bg" x="1855" y="467" width="100" height="18"/>
+  <text class="badge-text-green" x="1905" y="476">Portfolio Signals</text>
+
+  <!-- Node 8: Comparative Evaluation Framework -->
+  <g transform="translate(1705, 492)">
+    <rect class="card" x="0" y="0" width="400" height="460" />
+    <text x="16" y="22" class="mono" font-size="9" font-weight="700" fill="#0969da">STAGE 10 · VALIDATION &amp; BENCHMARK MATRIX</text>
+    <text x="384" y="22" class="mono" font-size="9" fill="#8c959f" text-anchor="end">EVAL-01</text>
+    <text x="16" y="44" class="title-serif" font-size="19" fill="#1e2530">Out-of-Sample Evaluation Framework</text>
+    <text x="16" y="62" font-size="10.5" fill="#57606a">Rigorous comparative benchmark protocol across 4 investment models.</text>
+    
+    <!-- 4-Strategy Benchmark Matrix -->
+    <g transform="translate(16, 72)">
+      <rect x="0" y="0" width="368" height="114" rx="4" fill="#ffffff" stroke="#d0d7de"/>
+      <rect x="0" y="0" width="368" height="26" rx="4" fill="#f8f9fa"/>
+      <text x="12" y="17" class="mono" font-size="9" font-weight="700" fill="#57606a">Strategy Model</text>
+      <text x="165" y="17" class="mono" font-size="9" font-weight="700" fill="#57606a">Allocation Logic</text>
+      <text x="300" y="17" class="mono" font-size="9" font-weight="700" fill="#57606a">Benchmark Role</text>
+      <line x1="0" y1="26" x2="368" y2="26" stroke="#d0d7de"/>
+
+      <text x="12" y="45" class="mono" font-size="9" fill="#1e2530">Buy &amp; Hold</text>
+      <text x="165" y="45" class="mono" font-size="9" fill="#57606a">Static Long Equities</text>
+      <text x="300" y="45" class="mono" font-size="9" fill="#57606a">Market Baseline</text>
+      <line x1="8" y1="53" x2="360" y2="53" stroke="#f1f3f5"/>
+
+      <text x="12" y="67" class="mono" font-size="9" fill="#1e2530">Risk Parity</text>
+      <text x="165" y="67" class="mono" font-size="9" fill="#57606a">Inverse Variance</text>
+      <text x="300" y="67" class="mono" font-size="9" fill="#57606a">Vol-Weighted Base</text>
+      <line x1="8" y1="75" x2="360" y2="75" stroke="#f1f3f5"/>
+
+      <text x="12" y="89" class="mono" font-size="9" fill="#8250df">Precision Matrix</text>
+      <text x="165" y="89" class="mono" font-size="9" fill="#8250df">GLASSO Risk Weighting</text>
+      <text x="300" y="89" class="mono" font-size="9" fill="#8250df">Gaussian Baseline</text>
+      <line x1="8" y1="97" x2="360" y2="97" stroke="#f1f3f5"/>
+
+      <text x="12" y="110" class="mono" font-size="9" font-weight="700" fill="#1a7f37">Causal Pruned</text>
+      <text x="165" y="110" class="mono" font-size="9" font-weight="700" fill="#1a7f37">Hub Pruning + Ratchet</text>
+      <text x="300" y="110" class="mono" font-size="9" font-weight="700" fill="#1a7f37">Proposed Alpha</text>
+    </g>
+
+    <!-- Key Performance Criteria to Be Evaluated -->
+    <text x="16" y="206" font-size="10.5" fill="#1e2530" font-weight="600">Target Evaluation Scorecard Metrics:</text>
+    <text x="16" y="222" font-size="10" fill="#57606a">• Risk-Adjusted Return: Annualized Return, Sharpe Ratio, Information Ratio.</text>
+    <text x="16" y="238" font-size="10" fill="#57606a">• Tail-Risk Mitigation: Maximum Drawdown (MaxDD), Calmar Ratio, CVaR 95%.</text>
+    <text x="16" y="254" font-size="10" fill="#57606a">• Real-World Friction: Turnover analysis &amp; transaction cost drag (5–15 bps).</text>
+
+    <!-- Target Deliverable Figures -->
+    <g transform="translate(16, 272)">
+      <text x="0" y="14" class="mono" font-size="9" font-weight="700" fill="#1e2530">Diagnostic Research Output Artifacts:</text>
+      <text x="0" y="32" class="mono" font-size="8.5" fill="#57606a">• Fig 1: Factor residualization audit (variance explained &amp; correlation drop)</text>
+      <text x="0" y="48" class="mono" font-size="8.5" fill="#57606a">• Fig 2: Precision matrix vs. DAGMA directed topology comparison</text>
+      <text x="0" y="64" class="mono" font-size="8.5" fill="#57606a">• Fig 3: Empirical orthogonality &amp; collinearity VIF validation audit</text>
+      <text x="0" y="80" class="mono" font-size="8.5" fill="#57606a">• Fig 4: Structural break timeline &amp; rolling Frobenius causal drift (ΔW_t)</text>
+      <text x="0" y="96" class="mono" font-size="8.5" fill="#57606a">• Fig 5: CatBoost feature importance &amp; chronological ablation scorecard</text>
+      <text x="0" y="112" class="mono" font-size="8.5" font-weight="700" fill="#1a7f37">• Fig 6: Out-of-sample equity curve &amp; underwater drawdown comparison</text>
+    </g>
+
+    <text x="16" y="420" font-size="9.5" fill="#1a7f37" font-weight="600">
+      Research Hypothesis: Causal Pruning significantly mitigates tail drawdown
+    </text>
+    <text x="16" y="436" font-size="9.5" fill="#1a7f37" font-weight="600">
+      while achieving superior risk-adjusted return over Buy &amp; Hold.
+    </text>
+  </g>
+
+  <!-- ======================================================================== -->
+  <!-- CROSS-COLUMN INTER-MODULE CONDUITS (STRICT ORTHOGONAL ROUTING)           -->
+  <!-- ======================================================================== -->
+
+  <!-- Corridor 1 (x: 455 to 605, center x: 530): Node 2 (Col 1) -> Node 3A & Node 3B (Col 2) -->
+  <path class="connector-purple" d="M 455 500 L 520 500 Q 530 500 530 490 L 530 252 Q 530 242 540 242 L 605 242" marker-end="url(#arr-purple)"/>
+  <rect class="badge-bg" x="460" y="340" width="140" height="20"/>
+  <text class="badge-text-purple" x="530" y="350">Residuals ε_t (GLASSO)</text>
+
+  <path class="connector-coral" d="M 455 522 L 605 522" marker-end="url(#arr-coral)"/>
+  <rect class="badge-bg" x="458" y="512" width="144" height="20"/>
+  <text class="badge-text-coral" x="530" y="522">Idiosyncratic ε_t (DAGMA)</text>
+
+  <!-- Corridor 2 (x: 1005 to 1155, center x: 1080): Node 3B (Col 2) -> Node 5 (Col 3) -->
+  <path class="connector-coral" d="M 1005 522 L 1070 522 Q 1080 522 1080 512 L 1080 258 Q 1080 248 1090 248 L 1155 248" marker-end="url(#arr-coral)"/>
+  <rect class="badge-bg" x="1016" y="375" width="128" height="20"/>
+  <text class="badge-text-coral" x="1080" y="385">Rolling Graph W_t</text>
+
+  <!-- Corridor 2 (x: 1005 to 1155, center x: 1080): Node 4 (Col 2) -> Node 6 (Col 3) -->
+  <path class="connector-blue" d="M 1005 818 L 1070 818 Q 1080 818 1080 808 L 1080 650 Q 1080 640 1090 640 L 1155 640" marker-end="url(#arr-blue)"/>
+  <rect class="badge-bg" x="1014" y="720" width="132" height="20"/>
+  <text class="badge-text-blue" x="1080" y="730">Centrality Features</text>
+
+  <!-- Corridor 3 (x: 1555 to 1705, center x: 1630): Node 5 (Col 3) -> Node 7 (Col 4) -->
+  <path class="connector-coral" d="M 1555 248 L 1705 248" marker-end="url(#arr-coral)"/>
+  <rect class="badge-bg" x="1562" y="238" width="136" height="20"/>
+  <text class="badge-text-coral" x="1630" y="248">Break Signals (τ_crit)</text>
+
+  <!-- Corridor 3 (x: 1555 to 1705, center x: 1630): Node 6 (Col 3) -> Node 7 (Col 4) -->
+  <path class="connector-blue" d="M 1555 576 L 1620 576 Q 1630 576 1630 566 L 1630 382 Q 1630 372 1640 372 L 1705 372" marker-end="url(#arr-blue)"/>
+  <rect class="badge-bg" x="1559" y="470" width="142" height="20"/>
+  <text class="badge-text-blue" x="1630" y="480">Forecasted Vol (σ_{t+1})</text>
+
+</svg>

@@ -1,0 +1,153 @@
+/home/oem/Documents/causal graph volatility/temp.py:267: InterpolationWarning: The test statistic is outside of the range of p-values available in the look-up table. The actual p-value is greater than the p-value returned.
+  kpss_res = kpss(df[col], regression='c', nlags='auto')
+/home/oem/Documents/causal graph volatility/temp.py:267: InterpolationWarning: The test statistic is outside of the range of p-values available in the look-up table. The actual p-value is greater than the p-value returned.
+  kpss_res = kpss(df[col], regression='c', nlags='auto')
+/home/oem/Documents/causal graph volatility/temp.py:267: InterpolationWarning: The test statistic is outside of the range of p-values available in the look-up table. The actual p-value is greater than the p-value returned.
+  kpss_res = kpss(df[col], regression='c', nlags='auto')
+/home/oem/Documents/causal graph volatility/temp.py:267: InterpolationWarning: The test statistic is outside of the range of p-values available in the look-up table. The actual p-value is greater than the p-value returned.
+  kpss_res = kpss(df[col], regression='c', nlags='auto')
+/home/oem/Documents/causal graph volatility/temp.py:267: InterpolationWarning: The test statistic is outside of the range of p-values available in the look-up table. The actual p-value is greater than the p-value returned.
+  kpss_res = kpss(df[col], regression='c', nlags='auto')
+/home/oem/Documents/causal graph volatility/temp.py:488: SingularMatrixWarning: The design matrix is rank-deficient. The model parameters are not uniquely determined.
+  model = sm.OLS(y_cropped, X_cropped_with_c).fit()
+/home/oem/Documents/causal graph volatility/temp.py:488: SingularMatrixWarning: The design matrix is rank-deficient. The model parameters are not uniquely determined.
+  model = sm.OLS(y_cropped, X_cropped_with_c).fit()
+/home/oem/Documents/causal graph volatility/temp.py:488: SingularMatrixWarning: The design matrix is rank-deficient. The model parameters are not uniquely determined.
+  model = sm.OLS(y_cropped, X_cropped_with_c).fit()
+/home/oem/Documents/causal graph volatility/temp.py:488: SingularMatrixWarning: The design matrix is rank-deficient. The model parameters are not uniquely determined.
+  model = sm.OLS(y_cropped, X_cropped_with_c).fit()
+/home/oem/Documents/causal graph volatility/temp.py:488: SingularMatrixWarning: The design matrix is rank-deficient. The model parameters are not uniquely determined.
+  model = sm.OLS(y_cropped, X_cropped_with_c).fit()
+✅ Section 1.1 Success: Environment initialized and random states locked.
+📥 Initiating data ingestion window: 2016-01-01 to 2026-01-01...
+   👉 Pulling equity metrics from Yahoo Finance API...
+   👉 Authenticating with St. Louis FRED via JSON API endpoint...
+      ✅ Authenticated JSON query successful.
+📊 Section 1.2 Success: Raw Matrix compiled. Dimensions: (2514, 7)
+
+⚙️ Running alignment corrections and variance calculations...
+✅ Section 1.3 Success: Final Ingestion Matrix Cleaned and Filtered.
+📋 Analytical Shape: (2514, 5) rows/columns.
+
+--- SAMPLE VIEW OF PROCESSED MATRIX HEAD ---
+            SP100_Close  Garman_Klass_Vol  ...  Credit_Spread  Liquidity_Proxy
+Date                                       ...                                
+2016-01-04    76.290657          0.008713  ...           3.24          0.18678
+2016-01-05    76.418175          0.006736  ...           3.25          0.15479
+2016-01-06    75.534050          0.008298  ...           3.26          0.14887
+2016-01-07    73.527748          0.013413  ...           3.28          0.17858
+2016-01-08    72.805115          0.010164  ...           3.31          0.18886
+
+[5 rows x 5 columns]
+🔄 Initializing mathematical transformation arrays...
+📊 Section 2.1 Success: Stationary Matrix formed. Dimensions: (2513, 5)
+
+🔍 EXECUTING DUAL STATIONARITY TESTING SUITE (ADF vs. KPSS)...
+=====================================================================================
+Variable Node          | ADF p-val  | ADF Struct  | KPSS p-val | KPSS Struct
+=====================================================================================
+SP100_Returns          | 4.2212e-29 | STATIONARY  | 1.0000e-01 | STATIONARY
+GK_Vol_Diff            | 2.7327e-25 | STATIONARY  | 1.0000e-01 | STATIONARY
+VIX_Diff               | 0.0000e+00 | STATIONARY  | 1.0000e-01 | STATIONARY
+Credit_Spread_Diff     | 5.8446e-20 | STATIONARY  | 1.0000e-01 | STATIONARY
+Liquidity_Diff         | 1.9318e-29 | STATIONARY  | 1.0000e-01 | STATIONARY
+=====================================================================================
+ℹ️ Note: If both tests read 'STATIONARY', your data is ready for causal evaluation.
+
+📈 MEASURING TIME-SERIES LINEAR & VOLATILITY DEPENDENCIES...
+-------------------------------------------------------------------------------------
+🔹 Ljung-Box Q-Test [GK_Vol_Diff] (Lag 10): P-Value = 1.86057e-100
+   👉 Result: Significant linear dependencies remain. Time-series memory is active.
+🔹 Engle ARCH LM-Test [SP100_Returns] (Lag 10): P-Value = 3.70968e-164
+   👉 Result: Severe ARCH effects confirmed. Volatility clustering is structural.
+-------------------------------------------------------------------------------------
+
+⚙️ INITIATING AR-GARCH RESIDUALIZATION FILTER ENGINE...
+-------------------------------------------------------------------------------------
+🔹 BIC Lag Optimization Match: Optimal AR Memory set to Lag 8
+
+📈 AR-GARCH ESTIMATION RESULTS SUMMARY:
+                           AR - GARCH Model Results                           
+==============================================================================
+Dep. Variable:                      y   R-squared:                       0.272
+Mean Model:                        AR   Adj. R-squared:                  0.269
+Vol Model:                      GARCH   Log-Likelihood:               -12911.5
+Distribution:                  Normal   AIC:                           25846.9
+Method:            Maximum Likelihood   BIC:                           25916.9
+                                        No. Observations:                 2505
+Date:                Wed, Sep 02 2026   Df Residuals:                     2496
+Time:                        01:12:07   Df Model:                            9
+                                 Mean Model                                
+===========================================================================
+                 coef    std err          t      P>|t|     95.0% Conf. Int.
+---------------------------------------------------------------------------
+Const         -0.2450      0.836     -0.293      0.770    [ -1.884,  1.394]
+y[1]          -0.5982  2.052e-02    -29.150 8.256e-187    [ -0.638, -0.558]
+y[2]          -0.3729  2.357e-02    -15.821  2.233e-56    [ -0.419, -0.327]
+y[3]          -0.3294  2.361e-02    -13.949  3.184e-44    [ -0.376, -0.283]
+y[4]          -0.2374  2.422e-02     -9.800  1.121e-22    [ -0.285, -0.190]
+y[5]          -0.1877  2.454e-02     -7.650  2.017e-14    [ -0.236, -0.140]
+y[6]          -0.1558  2.422e-02     -6.433  1.251e-10    [ -0.203, -0.108]
+y[7]          -0.1149  2.325e-02     -4.942  7.747e-07 [ -0.160,-6.933e-02]
+y[8]          -0.0767  2.013e-02     -3.809  1.394e-04 [ -0.116,-3.723e-02]
+                               Volatility Model                              
+=============================================================================
+                 coef    std err          t      P>|t|       95.0% Conf. Int.
+-----------------------------------------------------------------------------
+omega       1320.1939    261.527      5.048  4.464e-07  [8.076e+02,1.833e+03]
+alpha[1]       0.0346  2.325e-02      1.488      0.137 [-1.099e-02,8.017e-02]
+beta[1]        0.2145      0.148      1.453      0.146   [-7.489e-02,  0.504]
+=============================================================================
+
+Covariance estimator: robust
+
+🚀 Section 3.1 Success: Causal Discovery Matrix Compiled. Dimensions: (2513, 4)
+
+🧪 EXECUTING POST-RESIDUALIZATION DIAGNOSTIC CHECKS...
+=====================================================================================
+🔹 Residual Ljung-Box Test (10 Lags Joint P-val): P-value = 9.21570e-03
+🔹 Residual Engle ARCH Test (10 Lags LM P-val): P-value = 4.93693e-01
+=====================================================================================
+⚠️ WARNING: Residual dependencies remain. Consider expanding GARCH or lag specifications.
+🔹 TRAIN window: 2016-01-05 to 2020-12-29  (1256 rows)
+🔹 TEST  window: 2020-12-30 to 2025-12-31  (1257 rows)
+
+⚠️ From this point on, TEST is untouched by any fitting or tuning decision below.
+
+🕸️ INITIATING TIME-SERIES CAUSAL DISCOVERY LAYER...
+-------------------------------------------------------------------------------------
+✅ Causal graph fit on TRAIN window only.
+
+🔍 CAUSAL PARENTS DISCOVERED FROM TRAIN DATA (2016-2020) ONLY:
+=====================================================================================
+Causal Parent Node        | Time Lag (Tau)  | Path Coefficient     | P-Value
+=====================================================================================
+VIX_Diff                  | t - 1 days      | 2.54242              | 2.63831e-12
+VIX_Diff                  | t - 2 days      | 1.51199              | 5.06030e-05
+VIX_Diff                  | t - 3 days      | 1.02945              | 6.19358e-03
+Credit_Spread_Diff        | t - 1 days      | 2.99643              | 2.08521e-03
+=====================================================================================
+⚙️ Running IN-SAMPLE check (TRAIN window, strategy fit on the same data)...
+⚙️ Running TRUE OUT-OF-SAMPLE check (TEST window, untouched by fitting)...
+
+===========================================================================
+📊 IN-SAMPLE (TRAIN, 2016-2020) — strategy fit on this same window
+===========================================================================
+                  Annualised Return Annualised Volatility Sharpe Ratio Maximum Drawdown Total Stop-Out Events
+Standard_Baseline            11.66%                15.22%        0.766          -28.97%                   106
+Causal_Adaptive              13.76%                11.64%        1.182           -8.50%                   106
+
+===========================================================================
+📊 OUT-OF-SAMPLE (TEST, 2021-2026) — strategy NEVER saw this data while fitting
+===========================================================================
+                  Annualised Return Annualised Volatility Sharpe Ratio Maximum Drawdown Total Stop-Out Events
+Standard_Baseline             7.43%                14.93%        0.498          -22.22%                   135
+Causal_Adaptive               5.76%                13.17%        0.437          -19.34%                   129
+===========================================================================
+✅ OOS VALIDATION COMPLETE.
+---------------------------------------------------------------------------
+In-sample  (TRAIN) Sharpe — Causal_Adaptive: 1.182 | Standard_Baseline: 0.766
+Out-of-sample (TEST) Sharpe — Causal_Adaptive: 0.437 | Standard_Baseline: 0.498
+---------------------------------------------------------------------------
+ℹ️ Causal_Adaptive beats the baseline on ONE of Sharpe/drawdown out-of-sample,
+   not both. Report this honestly in the defense — partial, not full, support.

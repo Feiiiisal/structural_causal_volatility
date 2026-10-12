@@ -1,0 +1,121 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 940 710" width="940" height="710" style="background:#f8f9fa;">
+  <defs>
+    <!-- Arrowhead markers -->
+    <marker id="arr-slate" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto">
+      <polygon points="0 0.5, 6 3.5, 0 6.5" fill="#475569" />
+    </marker>
+    <marker id="arr-coral" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto">
+      <polygon points="0 0.5, 6 3.5, 0 6.5" fill="#ea580c" />
+    </marker>
+  </defs>
+  <!-- Outer Card Container -->
+  <rect x="16" y="16" width="908" height="678" rx="12" fill="#f8f9fa" stroke="#e2e8f0" stroke-width="1.5" />
+  <!-- Header Block -->
+  <text x="48" y="52" fill="#64748b" font-family="'Geist Mono', monospace" font-size="9" font-weight="600" letter-spacing="1.5">ARCHITECTURE FLOWCHART</text>
+  <text x="48" y="88" fill="#0f172a" font-family="'Instrument Serif', Georgia, serif" font-size="32" font-weight="400">Causal Volatility Framework</text>
+  <text x="48" y="112" fill="#475569" font-family="'Geist', -apple-system, BlinkMacSystemFont, sans-serif" font-size="13" font-weight="400">End-to-end pipeline from factor residualization to contagion-pruned risk execution.</text>
+  <!-- Connectors Layer -->
+  <line x1="264" y1="202.0" x2="360" y2="202.0" stroke="#475569" stroke-width="1.5" marker-end="url(#arr-slate)" />
+  <rect x="273.0" y="193.0" width="80" height="18" rx="3" fill="#f8f9fa" stroke="#e2e8f0" stroke-width="0.8" />
+  <text x="313.0" y="205.5" text-anchor="middle" fill="#475569" font-family="'Geist Mono', monospace" font-size="8.5" font-weight="600" letter-spacing="0.4">MARKET DATA</text>
+  <line x1="578" y1="202.0" x2="674" y2="202.0" stroke="#475569" stroke-width="1.5" marker-end="url(#arr-slate)" />
+  <rect x="588.0" y="193.0" width="78" height="18" rx="3" fill="#f8f9fa" stroke="#e2e8f0" stroke-width="0.8" />
+  <text x="627.0" y="205.5" text-anchor="middle" fill="#475569" font-family="'Geist Mono', monospace" font-size="8.5" font-weight="600" letter-spacing="0.4">RESIDUALS ε</text>
+  <line x1="784.0" y1="240" x2="784.0" y2="324" stroke="#475569" stroke-width="1.5" marker-end="url(#arr-slate)" />
+  <rect x="745.0" y="274.0" width="78" height="18" rx="3" fill="#f8f9fa" stroke="#e2e8f0" stroke-width="0.8" />
+  <text x="784.0" y="286.5" text-anchor="middle" fill="#475569" font-family="'Geist Mono', monospace" font-size="8.5" font-weight="600" letter-spacing="0.4">PRECISION Θ</text>
+  <line x1="676" y1="364.0" x2="580" y2="364.0" stroke="#ea580c" stroke-width="1.5" marker-end="url(#arr-coral)" />
+  <rect x="586.0" y="355.0" width="82" height="18" rx="3" fill="#f8f9fa" stroke="#fed7aa" stroke-width="0.8" />
+  <text x="627.0" y="367.5" text-anchor="middle" fill="#ea580c" font-family="'Geist Mono', monospace" font-size="8.5" font-weight="600" letter-spacing="0.4">CAUSAL DAG W</text>
+  <line x1="362" y1="364.0" x2="266" y2="364.0" stroke="#ea580c" stroke-width="1.5" marker-end="url(#arr-coral)" />
+  <rect x="273.0" y="355.0" width="80" height="18" rx="3" fill="#f8f9fa" stroke="#fed7aa" stroke-width="0.8" />
+  <text x="313.0" y="367.5" text-anchor="middle" fill="#ea580c" font-family="'Geist Mono', monospace" font-size="8.5" font-weight="600" letter-spacing="0.4">VALIDATED W*</text>
+  <line x1="156.0" y1="402" x2="156.0" y2="486" stroke="#ea580c" stroke-width="1.5" marker-end="url(#arr-coral)" />
+  <rect x="117.0" y="436.0" width="78" height="18" rx="3" fill="#f8f9fa" stroke="#fed7aa" stroke-width="0.8" />
+  <text x="156.0" y="448.5" text-anchor="middle" fill="#ea580c" font-family="'Geist Mono', monospace" font-size="8.5" font-weight="600" letter-spacing="0.4">DRIFT ALERTS</text>
+  <line x1="264" y1="526.0" x2="360" y2="526.0" stroke="#ea580c" stroke-width="1.5" marker-end="url(#arr-coral)" />
+  <rect x="271.0" y="517.0" width="84" height="18" rx="3" fill="#f8f9fa" stroke="#fed7aa" stroke-width="0.8" />
+  <text x="313.0" y="529.5" text-anchor="middle" fill="#ea580c" font-family="'Geist Mono', monospace" font-size="8.5" font-weight="600" letter-spacing="0.4">VOL FORECASTS</text>
+  <line x1="578" y1="526.0" x2="674" y2="526.0" stroke="#475569" stroke-width="1.5" marker-end="url(#arr-slate)" />
+  <rect x="586.0" y="517.0" width="82" height="18" rx="3" fill="#f8f9fa" stroke="#e2e8f0" stroke-width="0.8" />
+  <text x="627.0" y="529.5" text-anchor="middle" fill="#475569" font-family="'Geist Mono', monospace" font-size="8.5" font-weight="600" letter-spacing="0.4">PORTFOLIO PnL</text>
+  <!-- Nodes Layer -->
+  <g class="node-group" data-id="node1" tabindex="0">
+    <rect class="card-rect" x="48" y="164" width="216" height="76" rx="8" fill="#ffffff" stroke="#334155" stroke-width="1.5" />
+    <rect x="60" y="174" width="52" height="14" rx="3" fill="none" stroke="#94a3b8" stroke-width="1" />
+    <text x="86.0" y="184.0" text-anchor="middle" fill="#64748b" font-family="'Geist Mono', monospace" font-size="8" font-weight="600" letter-spacing="0.5">INGEST</text>
+    <text x="156.0" y="208" text-anchor="middle" fill="#0f172a" font-family="'Geist', -apple-system, BlinkMacSystemFont, sans-serif" font-size="13.5" font-weight="600">Data Ingestion</text>
+    <text x="156.0" y="226" text-anchor="middle" fill="#64748b" font-family="'Geist Mono', monospace" font-size="9.5" font-weight="400">Equities & F-F Factors</text>
+  </g>
+  <g class="node-group" data-id="node2" tabindex="0">
+    <rect class="card-rect" x="362" y="164" width="216" height="76" rx="8" fill="#ffffff" stroke="#334155" stroke-width="1.5" />
+    <rect x="374" y="174" width="78" height="14" rx="3" fill="none" stroke="#94a3b8" stroke-width="1" />
+    <text x="413.0" y="184.0" text-anchor="middle" fill="#64748b" font-family="'Geist Mono', monospace" font-size="8" font-weight="600" letter-spacing="0.5">RESIDUALIZE</text>
+    <text x="470.0" y="208" text-anchor="middle" fill="#0f172a" font-family="'Geist', -apple-system, BlinkMacSystemFont, sans-serif" font-size="13.5" font-weight="600">Factor Residualizer</text>
+    <text x="470.0" y="226" text-anchor="middle" fill="#64748b" font-family="'Geist Mono', monospace" font-size="9.5" font-weight="400">Vectorized OLS Engine</text>
+  </g>
+  <g class="node-group" data-id="node3" tabindex="0">
+    <rect class="card-rect" x="676" y="164" width="216" height="76" rx="8" fill="#ffffff" stroke="#334155" stroke-width="1.5" />
+    <rect x="688" y="174" width="70" height="14" rx="3" fill="none" stroke="#94a3b8" stroke-width="1" />
+    <text x="723.0" y="184.0" text-anchor="middle" fill="#64748b" font-family="'Geist Mono', monospace" font-size="8" font-weight="600" letter-spacing="0.5">BENCHMARK</text>
+    <text x="784.0" y="208" text-anchor="middle" fill="#0f172a" font-family="'Geist', -apple-system, BlinkMacSystemFont, sans-serif" font-size="13.5" font-weight="600">Precision Matrix</text>
+    <text x="784.0" y="226" text-anchor="middle" fill="#64748b" font-family="'Geist Mono', monospace" font-size="9.5" font-weight="400">Graphical LASSO (Θ)</text>
+  </g>
+  <g class="node-group" data-id="node4" tabindex="0">
+    <rect class="card-rect" x="676" y="326" width="216" height="76" rx="8" fill="#fff7ed" stroke="#ea580c" stroke-width="1.5" />
+    <rect x="688" y="336" width="72" height="14" rx="3" fill="none" stroke="#fed7aa" stroke-width="1" />
+    <text x="724.0" y="346.0" text-anchor="middle" fill="#ea580c" font-family="'Geist Mono', monospace" font-size="8" font-weight="600" letter-spacing="0.5">CAUSAL DAG</text>
+    <text x="784.0" y="370" text-anchor="middle" fill="#0f172a" font-family="'Geist', -apple-system, BlinkMacSystemFont, sans-serif" font-size="13.5" font-weight="600">Causal Discovery</text>
+    <text x="784.0" y="388" text-anchor="middle" fill="#ea580c" font-family="'Geist Mono', monospace" font-size="9.5" font-weight="400">Student-t DAGMA</text>
+  </g>
+  <g class="node-group" data-id="node5" tabindex="0">
+    <rect class="card-rect" x="362" y="326" width="216" height="76" rx="8" fill="#fff7ed" stroke="#ea580c" stroke-width="1.5" />
+    <rect x="374" y="336" width="62" height="14" rx="3" fill="none" stroke="#fed7aa" stroke-width="1" />
+    <text x="405.0" y="346.0" text-anchor="middle" fill="#ea580c" font-family="'Geist Mono', monospace" font-size="8" font-weight="600" letter-spacing="0.5">VALIDATE</text>
+    <text x="470.0" y="370" text-anchor="middle" fill="#0f172a" font-family="'Geist', -apple-system, BlinkMacSystemFont, sans-serif" font-size="13.5" font-weight="600">Orthogonality Audit</text>
+    <text x="470.0" y="388" text-anchor="middle" fill="#ea580c" font-family="'Geist Mono', monospace" font-size="9.5" font-weight="400">VIF & Non-Redundancy</text>
+  </g>
+  <g class="node-group" data-id="node6" tabindex="0">
+    <rect class="card-rect" x="48" y="326" width="216" height="76" rx="8" fill="#fff7ed" stroke="#ea580c" stroke-width="1.5" />
+    <rect x="60" y="336" width="82" height="14" rx="3" fill="none" stroke="#fed7aa" stroke-width="1" />
+    <text x="101.0" y="346.0" text-anchor="middle" fill="#ea580c" font-family="'Geist Mono', monospace" font-size="8" font-weight="600" letter-spacing="0.5">REGIME DRIFT</text>
+    <text x="156.0" y="370" text-anchor="middle" fill="#0f172a" font-family="'Geist', -apple-system, BlinkMacSystemFont, sans-serif" font-size="13.5" font-weight="600">Causal Drift Monitor</text>
+    <text x="156.0" y="388" text-anchor="middle" fill="#ea580c" font-family="'Geist Mono', monospace" font-size="9.5" font-weight="400">Frobenius Velocity ΔW</text>
+  </g>
+  <g class="node-group" data-id="node7" tabindex="0">
+    <rect class="card-rect" x="48" y="488" width="216" height="76" rx="8" fill="#fff7ed" stroke="#ea580c" stroke-width="1.5" />
+    <rect x="60" y="498" width="78" height="14" rx="3" fill="none" stroke="#fed7aa" stroke-width="1" />
+    <text x="99.0" y="508.0" text-anchor="middle" fill="#ea580c" font-family="'Geist Mono', monospace" font-size="8" font-weight="600" letter-spacing="0.5">CATBOOST ML</text>
+    <text x="156.0" y="532" text-anchor="middle" fill="#0f172a" font-family="'Geist', -apple-system, BlinkMacSystemFont, sans-serif" font-size="13.5" font-weight="600">CatBoost Vol Regressor</text>
+    <text x="156.0" y="550" text-anchor="middle" fill="#ea580c" font-family="'Geist Mono', monospace" font-size="9.5" font-weight="400">Student-t Heavy Tails</text>
+  </g>
+  <g class="node-group" data-id="node8" tabindex="0">
+    <rect class="card-rect" x="362" y="488" width="216" height="76" rx="8" fill="#fff7ed" stroke="#ea580c" stroke-width="1.5" />
+    <rect x="374" y="498" width="58" height="14" rx="3" fill="none" stroke="#fed7aa" stroke-width="1" />
+    <text x="403.0" y="508.0" text-anchor="middle" fill="#ea580c" font-family="'Geist Mono', monospace" font-size="8" font-weight="600" letter-spacing="0.5">PRUNING</text>
+    <text x="470.0" y="532" text-anchor="middle" fill="#0f172a" font-family="'Geist', -apple-system, BlinkMacSystemFont, sans-serif" font-size="13.5" font-weight="600">Contagion Pruner</text>
+    <text x="470.0" y="550" text-anchor="middle" fill="#ea580c" font-family="'Geist Mono', monospace" font-size="9.5" font-weight="400">Hub Exits & Ratchet</text>
+  </g>
+  <g class="node-group" data-id="node9" tabindex="0">
+    <rect class="card-rect" x="676" y="488" width="216" height="76" rx="8" fill="#ffffff" stroke="#334155" stroke-width="1.5" />
+    <rect x="688" y="498" width="64" height="14" rx="3" fill="none" stroke="#94a3b8" stroke-width="1" />
+    <text x="720.0" y="508.0" text-anchor="middle" fill="#64748b" font-family="'Geist Mono', monospace" font-size="8" font-weight="600" letter-spacing="0.5">EVALUATE</text>
+    <text x="784.0" y="532" text-anchor="middle" fill="#0f172a" font-family="'Geist', -apple-system, BlinkMacSystemFont, sans-serif" font-size="13.5" font-weight="600">Strategy Evaluator</text>
+    <text x="784.0" y="550" text-anchor="middle" fill="#64748b" font-family="'Geist Mono', monospace" font-size="9.5" font-weight="400">Sharpe, Drawdowns & Alpha</text>
+  </g>
+  <!-- Bottom Separator & Legend -->
+  <line x1="48" y1="624" x2="892" y2="624" stroke="#e2e8f0" stroke-width="1" />
+  
+  <text x="48" y="658" fill="#64748b" font-family="'Geist Mono', monospace" font-size="9" font-weight="600" letter-spacing="1.5">LEGEND</text>
+  
+  <!-- Legend Item 1: Standard -->
+  <rect x="120" y="647" width="14" height="14" rx="3" fill="#ffffff" stroke="#334155" stroke-width="1.4" />
+  <text x="142" y="658" fill="#475569" font-family="'Geist', -apple-system, BlinkMacSystemFont, sans-serif" font-size="11" font-weight="400">Standard Pipeline Stage</text>
+  
+  <!-- Legend Item 2: Novel Causal Engine -->
+  <rect x="290" y="647" width="14" height="14" rx="3" fill="#fff7ed" stroke="#ea580c" stroke-width="1.4" />
+  <text x="312" y="658" fill="#ea580c" font-family="'Geist', -apple-system, BlinkMacSystemFont, sans-serif" font-size="11" font-weight="500">Novel Causal Engine</text>
+
+  <!-- Capstone Annotation -->
+  <text x="892" y="658" text-anchor="end" fill="#94a3b8" font-family="'Geist Mono', monospace" font-size="9.5">MScFE Capstone M2 Blueprint</text>
+</svg>
