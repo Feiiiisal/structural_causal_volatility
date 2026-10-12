@@ -3,7 +3,7 @@ import time
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Union
 
-from catboost_dagma.benchmark.orthogonality import NetworkFeatureAudit
+from catboost_dagma.benchmark.network_audit import NetworkFeatureAudit
 from catboost_dagma.benchmark.precision_matrix import PrecisionMatrixEstimator
 from catboost_dagma.breaks.structural_breaks import StructuralBreakDetector
 from catboost_dagma.config import DAGMA_CONFIG, DEFAULT_SECTOR_ASSETS
