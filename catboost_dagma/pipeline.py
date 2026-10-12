@@ -1,20 +1,17 @@
-"""End-to-end research pipeline with chronological safeguards."""
-import os
+"""Run the main capstone pipeline."""
 import time
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Union
-import numpy as np
-import pandas as pd
 
-from catboost_dagma.config import DEFAULT_SECTOR_ASSETS, DAGMA_CONFIG, FIGURES_DIR
+from catboost_dagma.benchmark.orthogonality import NetworkFeatureAudit
+from catboost_dagma.benchmark.precision_matrix import PrecisionMatrixEstimator
+from catboost_dagma.breaks.structural_breaks import StructuralBreakDetector
+from catboost_dagma.config import DAGMA_CONFIG, DEFAULT_SECTOR_ASSETS, FIGURES_DIR
+from catboost_dagma.dagma.solver import run_parallel_rolling_dagma
 from catboost_dagma.data.loader import UnifiedDataLoader
 from catboost_dagma.data.residualizer import FamaFrenchResidualizer
-from catboost_dagma.dagma.solver import run_parallel_rolling_dagma
-from catboost_dagma.benchmark.precision_matrix import PrecisionMatrixEstimator
-from catboost_dagma.benchmark.orthogonality import EmpiricalOrthogonalityAuditor
-from catboost_dagma.breaks.structural_breaks import StructuralBreakDetector
-from catboost_dagma.ml.feature_engineering import FusionFeatureEngineer
 from catboost_dagma.ml.catboost_fusion import CatBoostFusionModel
+from catboost_dagma.ml.feature_engineering import FusionFeatureEngineer
 from catboost_dagma.strategy.contagion_pruning import CausalContagionStrategy
 
 
@@ -45,110 +42,110 @@ class CatBoostDagmaPipeline:
     def run(self, verbose: bool = True) -> Dict[str, Any]:
         started = time.time()
 
-        # 1. Data
-        loader = UnifiedDataLoader(sp100_path=self.sp100_path, offline=self.offline)
-        returns_df, factors_df = loader.get_aligned_panel(self.assets, self.start_date, self.end_date)
-        if verbose:
-            print(f"[1/9] aligned data: {returns_df.shape}, {returns_df.index.min().date()} to {returns_df.index.max().date()}")
+        loader = UnifiedDataLoader(self.sp100_path, self.offline)
+        returns, factors = loader.get_aligned_panel(
+            self.assets, self.start_date, self.end_date
+        )
+        self._log(verbose, f"data: {returns.shape}")
 
-        # 2. Factor adjustment. Initial window is historical; later betas are refit without future data.
         residualizer = FamaFrenchResidualizer()
-        residuals_df = residualizer.fit_transform_walk_forward(
-            returns_df, factors_df,
+        residuals = residualizer.fit_transform_walk_forward(
+            returns,
+            factors,
             min_train_size=min(252, max(60, self.window_size)),
             refit_every=self.step_size,
         )
-        exposure_df = residualizer.get_factor_exposure_report()
+        residual_vol = residuals.abs()
+        self._log(verbose, "factor adjustment done")
 
-        # Project title and research question concern volatility transmission, not raw residual-return edges.
-        residual_vol_df = residuals_df.abs()
-        if verbose:
-            print(f"[2/9] factor-adjusted volatility panel: {residual_vol_df.shape}")
-
-        # 3. Directed network
-        dagma_kwargs = {
-            "loss_type": "student-t", "learnable_nu": True,
-            "warm_iter": 75, "max_iter": 150, "lambda1": 0.02,
-            "lr": 0.005, "verbose": False,
-        }
-        dagma_results = run_parallel_rolling_dagma(
-            residual_vol_df.values,
-            list(residual_vol_df.index),
+        dagma = run_parallel_rolling_dagma(
+            residual_vol.values,
+            list(residual_vol.index),
             window_size=self.window_size,
             step_size=self.step_size,
-            dagma_kwargs=dagma_kwargs,
+            dagma_kwargs={
+                "loss_type": "student-t",
+                "learnable_nu": True,
+                "warm_iter": 75,
+                "max_iter": 150,
+                "lambda1": 0.02,
+                "lr": 0.005,
+                "verbose": False,
+            },
             n_workers=self.n_workers,
         )
-        if not dagma_results:
-            raise RuntimeError("No rolling DAGMA estimates were produced. Increase sample length or reduce window_size.")
-        if verbose:
-            print(f"[3/9] DAGMA windows: {len(dagma_results)}")
+        if not dagma:
+            raise RuntimeError("No DAGMA windows were fitted.")
+        self._log(verbose, f"DAGMA windows: {len(dagma)}")
 
-        # 4. Precision benchmark on exactly the same volatility windows.
-        precision_estimator = PrecisionMatrixEstimator()
-        precision_results = []
-        for res in dagma_results:
-            end_idx = res["end_idx"]
-            Xw = residual_vol_df.iloc[end_idx-self.window_size:end_idx].values
-            precision, alpha = precision_estimator.fit_precision_matrix(Xw)
-            topo = precision_estimator.extract_topologies(precision)
-            topo["alpha"] = alpha
-            precision_results.append(topo)
-        if verbose:
-            print(f"[4/9] Graphical LASSO windows: {len(precision_results)}")
+        precision = self._precision_results(residual_vol, dagma)
 
-        # 5. Structural drift with thresholds calibrated from prior drift only.
-        break_detector = StructuralBreakDetector(percentile_threshold=95.0, min_history=20, history_window=252)
-        drift_series = break_detector.compute_causal_drift(dagma_results)
-        breaks_df = break_detector.fit_detect(drift_series)
-        break_features_df = break_detector.generate_break_features(drift_series)
-        if verbose:
-            print(f"[5/9] structural-change flags: {len(breaks_df)}")
+        detector = StructuralBreakDetector(
+            percentile_threshold=95.0,
+            min_history=20,
+            history_window=252,
+        )
+        drift = detector.compute_causal_drift(dagma)
+        breaks = detector.fit_detect(drift)
+        break_features = detector.generate_break_features(drift)
 
-        # 6. ML dataset and empirical network comparison.
-        engineer = FusionFeatureEngineer(forward_horizon=5)
-        df_ml = engineer.build_ml_dataset(returns_df, dagma_results, precision_results, break_features_df)
-        auditor = EmpiricalOrthogonalityAuditor()
-        network_comparison_df = auditor.audit_topological_correlations(df_ml)
-        vif_df = auditor.audit_variance_inflation_factors(df_ml)
-        if verbose:
-            print(f"[6/9] ML observations: {len(df_ml)}")
+        features = FusionFeatureEngineer(forward_horizon=5).build_ml_dataset(
+            returns, dagma, precision, break_features
+        )
 
-        # 7. Volatility-forecast ablation. Test data are not used for early stopping.
-        fusion_model = CatBoostFusionModel(target_col="forward_volatility")
-        ablation_res = fusion_model.run_ablation_study(df_ml, split_date="2021-01-01")
-        if verbose:
-            print(f"[7/9] OOS volatility RMSE reduction: {ablation_res['improvement']['rmse_reduction_pct']:.3f}%")
+        audit = NetworkFeatureAudit()
+        network_comparison = audit.audit_topological_correlations(features)
+        vif = audit.audit_variance_inflation_factors(features)
 
-        # 8. Downstream portfolio application, reported primarily for the OOS period.
+        catboost = CatBoostFusionModel(target_col="forward_volatility")
+        ablation = catboost.run_ablation_study(features, split_date="2021-01-01")
+
         strategy = CausalContagionStrategy()
-        strategy_res = strategy.backtest(
-            returns_df, dagma_results, breaks_df,
-            drift_series=drift_series,
+        strategy_results = strategy.backtest(
+            returns,
+            dagma,
+            breaks,
+            drift_series=drift,
             evaluation_start="2021-01-01",
         )
-        if verbose:
-            print("[8/9] portfolio evaluation complete")
 
-        # 9. Return all research objects. Figure generation remains a separate presentation step.
         elapsed = time.time() - started
-        if verbose:
-            print(f"[9/9] complete in {elapsed:.1f}s")
+        self._log(verbose, f"finished in {elapsed:.1f}s")
+
         return {
-            "returns_df": returns_df,
-            "factors_df": factors_df,
-            "residuals_df": residuals_df,
-            "residual_volatility_df": residual_vol_df,
-            "exposure_df": exposure_df,
-            "dagma_results": dagma_results,
-            "precision_results": precision_results,
-            "breaks_df": breaks_df,
-            "break_features_df": break_features_df,
-            "drift_series": drift_series,
-            "df_ml": df_ml,
-            "network_comparison_df": network_comparison_df,
-            "vif_df": vif_df,
-            "ablation_results": ablation_res,
-            "strategy_results": strategy_res,
+            "returns_df": returns,
+            "factors_df": factors,
+            "residuals_df": residuals,
+            "residual_volatility_df": residual_vol,
+            "exposure_df": residualizer.get_factor_exposure_report(),
+            "dagma_results": dagma,
+            "precision_results": precision,
+            "breaks_df": breaks,
+            "break_features_df": break_features,
+            "drift_series": drift,
+            "df_ml": features,
+            "network_comparison_df": network_comparison,
+            "vif_df": vif,
+            "ablation_results": ablation,
+            "strategy_results": strategy_results,
             "elapsed_seconds": elapsed,
         }
+
+    def _precision_results(self, residual_vol, dagma):
+        estimator = PrecisionMatrixEstimator()
+        results = []
+
+        for item in dagma:
+            end = item["end_idx"]
+            window = residual_vol.iloc[end - self.window_size:end].values
+            matrix, alpha = estimator.fit_precision_matrix(window)
+            topology = estimator.extract_topologies(matrix)
+            topology["alpha"] = alpha
+            results.append(topology)
+
+        return results
+
+    @staticmethod
+    def _log(verbose, message):
+        if verbose:
+            print(message)
