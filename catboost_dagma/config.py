@@ -10,8 +10,15 @@ REPORTS_DIR = ROOT / "catboost_dagma" / "reports"
 FIGURES_DIR.mkdir(parents=True, exist_ok=True)
 REPORTS_DIR.mkdir(parents=True, exist_ok=True)
 
-_data_path = os.getenv("SP100_DATA_PATH")
-SP100_PICKLE_PATH = Path(_data_path).expanduser() if _data_path else ROOT / "data" / "sp100_daily_returns_2016_2026.pkl"
+_returns_path = os.getenv("SP100_DATA_PATH")
+_factors_path = os.getenv("FF_DATA_PATH")
+
+SP100_PICKLE_PATH = (
+    Path(_returns_path).expanduser()
+    if _returns_path
+    else ROOT / "data" / "sp100_daily_returns_2016_2026.pkl"
+)
+FF_DATA_PATH = Path(_factors_path).expanduser() if _factors_path else None
 
 DEFAULT_SECTOR_ASSETS = [
     "AAPL", "MSFT", "NVDA", "GOOGL", "META",
@@ -51,18 +58,6 @@ DAGMA_CONFIG = {
     "device": "cuda" if torch.cuda.is_available() else "cpu",
     "dtype": torch.float64,
     "n_workers": min(8, os.cpu_count() or 4),
-}
-
-PRECISION_CONFIG = {
-    "alpha_grid": [1e-4, 5e-4, 1e-3, 5e-3, 1e-2, 5e-2, 1e-1],
-    "cv_folds": 3,
-    "partial_corr_threshold": 0.10,
-}
-
-BREAK_DETECTION_CONFIG = {
-    "percentile_threshold": 95.0,
-    "min_event_distance": 10,
-    "min_history": 20,
 }
 
 CATBOOST_CONFIG = {
