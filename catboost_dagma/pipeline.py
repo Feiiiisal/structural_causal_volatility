@@ -6,7 +6,7 @@ from typing import Any, Dict, List, Optional, Union
 from catboost_dagma.benchmark.orthogonality import NetworkFeatureAudit
 from catboost_dagma.benchmark.precision_matrix import PrecisionMatrixEstimator
 from catboost_dagma.breaks.structural_breaks import StructuralBreakDetector
-from catboost_dagma.config import DAGMA_CONFIG, DEFAULT_SECTOR_ASSETS, FIGURES_DIR
+from catboost_dagma.config import DAGMA_CONFIG, DEFAULT_SECTOR_ASSETS
 from catboost_dagma.dagma.solver import run_parallel_rolling_dagma
 from catboost_dagma.data.loader import UnifiedDataLoader
 from catboost_dagma.data.residualizer import FamaFrenchResidualizer
@@ -27,7 +27,6 @@ class CatBoostDagmaPipeline:
         sp100_path: Optional[Union[str, Path]] = None,
         factor_path: Optional[Union[str, Path]] = None,
         offline: bool = True,
-        output_dir: Optional[Union[str, Path]] = None,
     ):
         self.assets = assets or DEFAULT_SECTOR_ASSETS
         self.start_date = start_date
@@ -38,8 +37,6 @@ class CatBoostDagmaPipeline:
         self.sp100_path = Path(sp100_path) if sp100_path else None
         self.factor_path = Path(factor_path) if factor_path else None
         self.offline = offline
-        self.output_dir = Path(output_dir) if output_dir else FIGURES_DIR
-        self.output_dir.mkdir(parents=True, exist_ok=True)
 
     def run(self, verbose: bool = True) -> Dict[str, Any]:
         started = time.time()
