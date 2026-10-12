@@ -34,4 +34,4 @@ For the focused tests:
 pytest -q catboost_dagma/tests/test_research_integrity_patch.py
 ```
 
-The figures and old notebook outputs in this folder came from earlier runs. Rerun the current pipeline before using numerical results in the final report.
+The notebook is only a small runner. Generate report figures from a fresh pipeline run before using numerical results.
