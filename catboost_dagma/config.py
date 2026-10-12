@@ -1,26 +1,17 @@
-"""Configuration for the capstone DAGMA + CatBoost research pipeline.
-
-Defaults are chosen for defensible out-of-sample research. All paths and
-window lengths remain configurable so the submitted 60-day specification can
-still be reproduced as a sensitivity check.
-"""
+"""Project settings."""
 from pathlib import Path
 import os
 import torch
 
-CATBOOST_DAGMA_DIR = Path(__file__).resolve().parent
-PROJECT_ROOT = CATBOOST_DAGMA_DIR.parent
-DATA_DIR = CATBOOST_DAGMA_DIR / "data"
-FIGURES_DIR = CATBOOST_DAGMA_DIR / "figures"
-DOCS_DIR = CATBOOST_DAGMA_DIR / "docs"
-REPORTS_DIR = CATBOOST_DAGMA_DIR / "reports"
+ROOT = Path(__file__).resolve().parent.parent
+FIGURES_DIR = ROOT / "catboost_dagma" / "figures"
+REPORTS_DIR = ROOT / "catboost_dagma" / "reports"
 
-for _p in (FIGURES_DIR, REPORTS_DIR):
-    _p.mkdir(parents=True, exist_ok=True)
+FIGURES_DIR.mkdir(parents=True, exist_ok=True)
+REPORTS_DIR.mkdir(parents=True, exist_ok=True)
 
-# Never hard-code one researcher's home directory. Set SP100_DATA_PATH when running.
-_env_sp100 = os.environ.get("SP100_DATA_PATH")
-SP100_PICKLE_PATH = Path(_env_sp100).expanduser() if _env_sp100 else PROJECT_ROOT / "data" / "sp100_daily_returns_2016_2026.pkl"
+_data_path = os.getenv("SP100_DATA_PATH")
+SP100_PICKLE_PATH = Path(_data_path).expanduser() if _data_path else ROOT / "data" / "sp100_daily_returns_2016_2026.pkl"
 
 DEFAULT_SECTOR_ASSETS = [
     "AAPL", "MSFT", "NVDA", "GOOGL", "META",
@@ -31,16 +22,15 @@ DEFAULT_SECTOR_ASSETS = [
 ]
 
 HISTORICAL_EVENTS = {
-    "COVID_Crash": {"start": "2020-02-01", "end": "2020-04-30", "peak_date": "2020-03-23"},
-    "Fed_Hikes_2022": {"start": "2021-12-01", "end": "2022-10-31", "peak_date": "2022-06-13"},
-    "SVB_Banking_Collapse": {"start": "2023-02-15", "end": "2023-04-15", "peak_date": "2023-03-10"},
+    "COVID_Crash": {"start": "2020-02-01", "end": "2020-04-30"},
+    "Fed_Hikes_2022": {"start": "2021-12-01", "end": "2022-10-31"},
+    "SVB_Banking_Collapse": {"start": "2023-02-15", "end": "2023-04-15"},
 }
 
 FF_FACTORS = ["Mkt-RF", "SMB", "HML"]
 FF_RISK_FREE = "RF"
 
 DAGMA_CONFIG = {
-    # One trading year is the primary specification; 60 days remains a robustness case.
     "window_size": 252,
     "step_size": 21,
     "p_lags": 1,
@@ -66,7 +56,6 @@ DAGMA_CONFIG = {
 PRECISION_CONFIG = {
     "alpha_grid": [1e-4, 5e-4, 1e-3, 5e-3, 1e-2, 5e-2, 1e-1],
     "cv_folds": 3,
-    # Threshold is applied to partial correlations, not raw precision entries.
     "partial_corr_threshold": 0.10,
 }
 
