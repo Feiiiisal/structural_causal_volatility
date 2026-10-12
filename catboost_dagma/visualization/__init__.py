@@ -1,7 +1,7 @@
 from catboost_dagma.visualization.diagnostics import (
     plot_catboost_ablation_and_importance,
     plot_contagion_strategy_performance,
-    plot_empirical_orthogonality_benchmark,
+    plot_network_comparison,
     plot_ff3_residualization_audit,
     plot_structural_breaks_causal_drift,
 )
@@ -9,7 +9,7 @@ from catboost_dagma.visualization.diagnostics import (
 __all__ = [
     "plot_catboost_ablation_and_importance",
     "plot_contagion_strategy_performance",
-    "plot_empirical_orthogonality_benchmark",
+    "plot_network_comparison",
     "plot_ff3_residualization_audit",
     "plot_structural_breaks_causal_drift",
 ]
