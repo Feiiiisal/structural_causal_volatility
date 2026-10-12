@@ -1,47 +1,77 @@
-"""DAGMA/DYNOTEARS optimizer and rolling-window estimator."""
+"""Rolling DAGMA fit."""
 import copy
 import os
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from typing import Any, Dict, List, Optional, Tuple
-import numpy as np
+
 import networkx as nx
+import numpy as np
 import torch
 
-from catboost_dagma.dagma.model import DeepDynotearsMLP, compute_student_t_loss, compute_gaussian_loss, tensor_to_numpy
+from catboost_dagma.dagma.model import (
+    DeepDynotearsMLP,
+    compute_gaussian_loss,
+    compute_student_t_loss,
+    tensor_to_numpy,
+)
 
 
 def get_eigenvector_centrality(W: np.ndarray, threshold: float = 0.05) -> np.ndarray:
-    W_thresh = np.where(np.abs(W) > threshold, np.abs(W), 0.0)
-    G = nx.from_numpy_array(W_thresh, create_using=nx.DiGraph)
+    adj = np.where(np.abs(W) > threshold, np.abs(W), 0.0)
+    graph = nx.from_numpy_array(adj, create_using=nx.DiGraph)
+
     try:
-        centrality = nx.eigenvector_centrality_numpy(G, weight="weight")
-        return np.array([centrality.get(i, 0.0) for i in range(len(W))])
+        values = nx.eigenvector_centrality_numpy(graph, weight="weight")
+        return np.array([values.get(i, 0.0) for i in range(len(W))])
     except Exception:
-        degrees = np.sum(W_thresh, axis=1)
-        norm = np.linalg.norm(degrees)
-        return degrees / norm if norm > 0 else np.zeros(len(W))
+        degree = adj.sum(axis=1)
+        scale = np.linalg.norm(degree)
+        return degree / scale if scale else np.zeros(len(W))
 
 
-def _minimize_stage(model, X, Xlags, max_iter, lr, lambda1, mu, s, loss_type="student-t", learnable_nu=True, tol=1e-6, checkpoint=50, verbose=False):
+def _fit_stage(
+    model,
+    X,
+    Xlags,
+    max_iter,
+    lr,
+    lambda1,
+    mu,
+    s,
+    loss_type,
+    learnable_nu,
+    tol,
+    checkpoint,
+):
     optimizer = torch.optim.Adam(model.parameters(), lr=lr, betas=(0.99, 0.999))
-    obj_prev = 1e16
+    last = np.inf
+
     for i in range(max_iter):
         optimizer.zero_grad()
-        h_val = model.h_func(s)
-        if h_val.item() < 0.0:
+        h = model.h_func(s)
+        if h.item() < 0:
             return False
-        score = compute_student_t_loss(model, X, Xlags, learnable_nu=learnable_nu) if loss_type == "student-t" else compute_gaussian_loss(model, X, Xlags)
-        obj = mu * (score + lambda1 * model.fc1_l1_reg()) + h_val
-        if torch.isnan(obj) or torch.isinf(obj):
+
+        if loss_type == "student-t":
+            loss = compute_student_t_loss(model, X, Xlags, learnable_nu)
+        else:
+            loss = compute_gaussian_loss(model, X, Xlags)
+
+        objective = mu * (loss + lambda1 * model.fc1_l1_reg()) + h
+        if not torch.isfinite(objective):
             return False
-        obj.backward()
+
+        objective.backward()
         torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
         optimizer.step()
+
         if i % checkpoint == 0 or i == max_iter - 1:
-            val = obj.item()
-            if abs((obj_prev - val) / max(abs(obj_prev), 1e-12)) <= tol:
+            value = objective.item()
+            change = abs((last - value) / max(abs(last), 1e-12))
+            if change <= tol:
                 break
-            obj_prev = val
+            last = value
+
     return True
 
 
@@ -65,64 +95,77 @@ def train_dagma_dynotears(
 ) -> DeepDynotearsMLP:
     device = device or ("cuda" if torch.cuda.is_available() else "cpu")
     dtype = torch.float64
+
     X = torch.tensor(X_np, dtype=dtype, device=device)
     Xlags = torch.tensor(Xlags_np, dtype=dtype, device=device)
     d = X.shape[1]
     p = Xlags.shape[1] // d
+
     model = DeepDynotearsMLP(d, p, dtype=dtype).to(device)
     mu = mu_init
+
     for stage in range(T):
-        inner_iter = max_iter if stage == T - 1 else warm_iter
-        state = copy.deepcopy(model.state_dict())
-        success, attempt, lr_cur, s_cur = False, 0, lr, s
-        while not success and attempt < 5:
-            attempt += 1
-            success = _minimize_stage(model, X, Xlags, inner_iter, lr_cur, lambda1, mu, s_cur, loss_type, learnable_nu, tol, checkpoint, verbose)
-            if not success:
-                model.load_state_dict(copy.deepcopy(state))
-                lr_cur *= 0.5
-                s_cur = 1.0
+        iterations = max_iter if stage == T - 1 else warm_iter
+        saved = copy.deepcopy(model.state_dict())
+        step_lr = lr
+
+        for _ in range(5):
+            ok = _fit_stage(
+                model, X, Xlags, iterations, step_lr, lambda1, mu, s,
+                loss_type, learnable_nu, tol, checkpoint,
+            )
+            if ok:
+                break
+            model.load_state_dict(copy.deepcopy(saved))
+            step_lr *= 0.5
+
         mu *= mu_factor
+
     return model
 
 
-def _standardize_window(X: np.ndarray) -> np.ndarray:
+def _standardize(X: np.ndarray) -> np.ndarray:
     X = np.asarray(X, dtype=float)
-    mu = X.mean(axis=0, keepdims=True)
-    sd = X.std(axis=0, ddof=1, keepdims=True)
-    sd = np.where(sd < 1e-10, 1.0, sd)
-    Z = (X - mu) / sd
+    std = X.std(axis=0, ddof=1)
+    std[std < 1e-10] = 1.0
+    Z = (X - X.mean(axis=0)) / std
+
     if not np.isfinite(Z).all():
-        raise ValueError("DAGMA window contains non-finite values after standardization.")
+        raise ValueError("Non-finite values in DAGMA window.")
+
     return Z
 
 
-def _fit_single_window_worker(args: Tuple[int, np.ndarray, Dict[str, Any]]) -> Dict[str, Any]:
+def _fit_window(args: Tuple[int, np.ndarray, Dict[str, Any]]) -> Dict[str, Any]:
     os.environ["OMP_NUM_THREADS"] = "1"
     os.environ["MKL_NUM_THREADS"] = "1"
     os.environ["OPENBLAS_NUM_THREADS"] = "1"
     torch.set_num_threads(1)
-    window_idx, X_window, kwargs = args
-    X_window = _standardize_window(X_window)
-    X_curr, X_lags = X_window[1:], X_window[:-1]
-    local_kwargs = kwargs.copy()
-    local_kwargs["device"] = "cpu"
-    model = train_dagma_dynotears(X_curr, X_lags, **local_kwargs)
+
+    idx, window, kwargs = args
+    window = _standardize(window)
+    X, Xlags = window[1:], window[:-1]
+
+    params = kwargs.copy()
+    params["device"] = "cpu"
+    model = train_dagma_dynotears(X, Xlags, **params)
+
     W = tensor_to_numpy(model.get_W_adj())
     A = tensor_to_numpy(model.get_A_adj())
-    nu = model.get_degrees_of_freedom()
-    w_abs = np.abs(W)
-    off_diag = w_abs[~np.eye(w_abs.shape[0], dtype=bool)]
-    thresh = max(float(np.percentile(off_diag, 80)) if off_diag.size and off_diag.max() > 0 else 0.001, 1e-4)
+
+    mask = ~np.eye(W.shape[0], dtype=bool)
+    weights = np.abs(W[mask])
+    threshold = max(float(np.percentile(weights, 80)), 1e-4) if weights.size else 1e-4
+
     return {
-        "window_idx": window_idx,
+        "window_idx": idx,
         "W": W,
         "A": A,
-        "nu": nu,
-        "edge_threshold": thresh,
-        "in_degree_causal": (w_abs > thresh).sum(axis=0).astype(float),
-        "out_degree_causal": (w_abs > thresh).sum(axis=1).astype(float),
-        "eigen_causal": get_eigenvector_centrality(W, threshold=thresh),
+        "nu": model.get_degrees_of_freedom(),
+        "edge_threshold": threshold,
+        "in_degree_causal": (np.abs(W) > threshold).sum(axis=0).astype(float),
+        "out_degree_causal": (np.abs(W) > threshold).sum(axis=1).astype(float),
+        "eigen_causal": get_eigenvector_centrality(W, threshold),
     }
 
 
@@ -135,29 +178,45 @@ def run_parallel_rolling_dagma(
     n_workers: int = 8,
 ) -> List[Dict[str, Any]]:
     X_data = np.asarray(X_data, dtype=float)
-    T_samples, N_assets = X_data.shape
-    if window_size <= N_assets:
-        raise ValueError(f"window_size={window_size} must exceed asset count={N_assets} for a defensible high-dimensional fit.")
-    if len(dates) != T_samples:
-        raise ValueError("dates length must match X_data rows")
-    timesteps = list(range(window_size, T_samples, step_size))
-    kwargs = dagma_kwargs or {"loss_type": "student-t", "learnable_nu": True, "warm_iter": 80, "max_iter": 150, "lambda1": 0.02, "verbose": False}
-    jobs = [(i, X_data[end-window_size:end], kwargs) for i, end in enumerate(timesteps)]
-    if not jobs:
+    rows, assets = X_data.shape
+
+    if window_size <= assets:
+        raise ValueError("window_size must be larger than the number of assets.")
+    if len(dates) != rows:
+        raise ValueError("dates and X_data must have the same number of rows.")
+
+    ends = list(range(window_size, rows, step_size))
+    if not ends:
         return []
 
+    params = dagma_kwargs or {
+        "loss_type": "student-t",
+        "learnable_nu": True,
+        "warm_iter": 80,
+        "max_iter": 150,
+        "lambda1": 0.02,
+        "verbose": False,
+    }
+    jobs = [(i, X_data[end - window_size:end], params) for i, end in enumerate(ends)]
+
     import multiprocessing as mp
-    ctx = mp.get_context("spawn")
+
     results = [None] * len(jobs)
-    with ProcessPoolExecutor(max_workers=max(1, min(n_workers, len(jobs))), mp_context=ctx) as executor:
-        futures = {executor.submit(_fit_single_window_worker, job): job[0] for job in jobs}
-        for fut in as_completed(futures):
-            res = fut.result()
-            idx = res["window_idx"]
-            end_idx = timesteps[idx]
-            # The graph only uses rows [end-window, end); its as-of date is therefore end-1.
-            res["end_idx"] = end_idx
-            res["date"] = dates[end_idx - 1]
-            res["target_start_idx"] = end_idx
-            results[idx] = res
+    ctx = mp.get_context("spawn")
+
+    with ProcessPoolExecutor(
+        max_workers=max(1, min(n_workers, len(jobs))),
+        mp_context=ctx,
+    ) as pool:
+        futures = {pool.submit(_fit_window, job): job[0] for job in jobs}
+
+        for future in as_completed(futures):
+            result = future.result()
+            i = result["window_idx"]
+            end = ends[i]
+            result["end_idx"] = end
+            result["date"] = dates[end - 1]
+            result["target_start_idx"] = end
+            results[i] = result
+
     return results
