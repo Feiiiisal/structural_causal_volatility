@@ -1,47 +1,36 @@
 #!/usr/bin/env python
-# coding: utf-8
-"""
-Standalone Execution Script for Version 2: CatBoost + DAGMA Causal Fusion Pipeline.
-Runs the complete workflow, prints quantitative results, and saves all diagnostic graphics.
-"""
-
+"""Run the capstone pipeline."""
 import argparse
 import sys
 from pathlib import Path
 
-# Setup paths
-SCRIPT_DIR = Path(__file__).resolve().parent
-CATBOOST_DAGMA_DIR = SCRIPT_DIR.parent
-PROJECT_ROOT = CATBOOST_DAGMA_DIR.parent
+ROOT = Path(__file__).resolve().parents[2]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
 
-if str(PROJECT_ROOT) not in sys.path:
-    sys.path.insert(0, str(PROJECT_ROOT))
-if str(CATBOOST_DAGMA_DIR) not in sys.path:
-    sys.path.insert(0, str(CATBOOST_DAGMA_DIR))
-
+from catboost_dagma.config import DAGMA_CONFIG
 from catboost_dagma.pipeline import CatBoostDagmaPipeline
-from catboost_dagma.config import DEFAULT_SECTOR_ASSETS, FIGURES_DIR
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Run CatBoost + DAGMA Version 2 Pipeline")
-    parser.add_argument("--assets", nargs="+", default=None, help="List of asset tickers (defaults to 20 representative multi-sector stocks)")
-    parser.add_argument("--window-size", type=int, default=60, help="Rolling window size in days")
-    parser.add_argument("--step-size", type=int, default=5, help="Step size between rolling windows")
-    parser.add_argument("--workers", type=int, default=8, help="Number of CPU workers for parallel DAGMA")
-    parser.add_argument("--output-dir", type=str, default=str(FIGURES_DIR), help="Output directory for figures")
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--assets", nargs="+")
+    parser.add_argument("--window-size", type=int, default=DAGMA_CONFIG["window_size"])
+    parser.add_argument("--step-size", type=int, default=DAGMA_CONFIG["step_size"])
+    parser.add_argument("--workers", type=int, default=DAGMA_CONFIG["n_workers"])
+    parser.add_argument("--start-date", default="2016-01-01")
+    parser.add_argument("--end-date", default="2026-01-01")
     args = parser.parse_args()
 
     pipeline = CatBoostDagmaPipeline(
         assets=args.assets,
+        start_date=args.start_date,
+        end_date=args.end_date,
         window_size=args.window_size,
         step_size=args.step_size,
         n_workers=args.workers,
-        output_dir=args.output_dir,
     )
-
-    results = pipeline.run(verbose=True)
-    print("\n✅ All V2 Pipeline deliverables successfully generated!")
+    pipeline.run(verbose=True)
 
 
 if __name__ == "__main__":
