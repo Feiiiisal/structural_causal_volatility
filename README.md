@@ -72,8 +72,8 @@ pytest -q catboost_dagma/tests/test_research_integrity_patch.py
 
 ## Notes
 
-The repo was started from the group's earlier implementation. Some old notebooks, figures and reports are still included for reference.
+This repo was rebuilt from the group's earlier implementation. The old code and generated outputs remain available in Git history, but they are not part of the current working tree.
 
-Those older results should not be quoted as final results until the current pipeline has been run again on the final dataset.
+Final numerical results should come from a fresh run on the final dataset.
 
-A short record of the main fixes is in [docs/reports/research_integrity_audit.md](docs/reports/research_integrity_audit.md).
+The main review fixes are listed in [docs/reports/research_integrity_audit.md](docs/reports/research_integrity_audit.md).
