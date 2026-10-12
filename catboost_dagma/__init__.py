@@ -4,7 +4,7 @@ from catboost_dagma.data.residualizer import FamaFrenchResidualizer
 from catboost_dagma.dagma.model import DeepDynotearsMLP
 from catboost_dagma.dagma.solver import train_dagma_dynotears, run_parallel_rolling_dagma
 from catboost_dagma.benchmark.precision_matrix import PrecisionMatrixEstimator
-from catboost_dagma.benchmark.orthogonality import NetworkFeatureAudit
+from catboost_dagma.benchmark.network_audit import NetworkFeatureAudit
 from catboost_dagma.breaks.structural_breaks import StructuralBreakDetector
 from catboost_dagma.ml.feature_engineering import FusionFeatureEngineer
 from catboost_dagma.ml.catboost_fusion import CatBoostFusionModel
