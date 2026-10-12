@@ -35,15 +35,16 @@ The main code is in `catboost_dagma/`.
 
 ## Data
 
-Set the equity return file before running the pipeline:
+Set the return and factor files before running offline:
 
 ```bash
 export SP100_DATA_PATH=/path/to/sp100_daily_returns_2016_2026.pkl
+export FF_DATA_PATH=/path/to/fama_french_daily.csv
 ```
 
-CSV is also supported.
+CSV and pickle files are supported. If `FF_DATA_PATH` is not set, the Fama-French series can be downloaded by running the pipeline with `offline=False`.
 
-The real research dataset is not stored in the repo. Files under `tests/fixtures/` are only for tests.
+The research data are not stored in the repo.
 
 ## Setup
 
