@@ -1,15 +1,13 @@
-"""
-Configuration settings for Version 2: DAGMA-DYNOTEARS + CatBoost Fusion Pipeline.
-Fuses non-linear continuous causal discovery with Student-t log-likelihood,
-Fama-French 3-factor residualization, Graphical LASSO precision matrix benchmarks,
-and structural break detection for risk prediction and adaptive portfolio management.
-"""
+"""Configuration for the capstone DAGMA + CatBoost research pipeline.
 
+Defaults are chosen for defensible out-of-sample research. All paths and
+window lengths remain configurable so the submitted 60-day specification can
+still be reproduced as a sensitivity check.
+"""
 from pathlib import Path
 import os
 import torch
 
-# Base Directories
 CATBOOST_DAGMA_DIR = Path(__file__).resolve().parent
 PROJECT_ROOT = CATBOOST_DAGMA_DIR.parent
 DATA_DIR = CATBOOST_DAGMA_DIR / "data"
@@ -17,96 +15,71 @@ FIGURES_DIR = CATBOOST_DAGMA_DIR / "figures"
 DOCS_DIR = CATBOOST_DAGMA_DIR / "docs"
 REPORTS_DIR = CATBOOST_DAGMA_DIR / "reports"
 
-os.makedirs(FIGURES_DIR, exist_ok=True)
-os.makedirs(REPORTS_DIR, exist_ok=True)
+for _p in (FIGURES_DIR, REPORTS_DIR):
+    _p.mkdir(parents=True, exist_ok=True)
 
-# Primary External Data Sources
-SP100_PICKLE_PATH = Path("/home/oem/Documents/proj/data/sp100_daily_returns_2018_2026.pkl")
+# Never hard-code one researcher's home directory. Set SP100_DATA_PATH when running.
+_env_sp100 = os.environ.get("SP100_DATA_PATH")
+SP100_PICKLE_PATH = Path(_env_sp100).expanduser() if _env_sp100 else PROJECT_ROOT / "data" / "sp100_daily_returns_2016_2026.pkl"
 
-# Default Asset Universe: Representative S&P 100 Multi-Sector Basket
 DEFAULT_SECTOR_ASSETS = [
-    # Technology / Growth
     "AAPL", "MSFT", "NVDA", "GOOGL", "META",
-    # Financials / Banks (Vital for SVB break detection)
     "JPM", "BAC", "WFC", "C", "GS", "MS",
-    # Energy / Commodities
     "XOM", "CVX", "COP",
-    # Healthcare / Defensive
     "JNJ", "UNH", "PFE", "ABBV",
-    # Industrials & Consumer
-    "AMZN", "PG", "CAT", "BA", "HD"
+    "AMZN", "PG", "CAT", "BA", "HD",
 ]
 
-# Historical Stress Events for Calibration and Structural Break Verification
 HISTORICAL_EVENTS = {
-    "COVID_Crash": {
-        "start": "2020-02-01",
-        "end": "2020-04-30",
-        "peak_date": "2020-03-23",
-        "description": "Global liquidity contraction and rapid market selloff"
-    },
-    "Fed_Hikes_2022": {
-        "start": "2021-12-01",
-        "end": "2022-10-31",
-        "peak_date": "2022-06-13",
-        "description": "Macro factor shock: aggressive interest rate hikes and inflation peak"
-    },
-    "SVB_Banking_Collapse": {
-        "start": "2023-02-15",
-        "end": "2023-04-15",
-        "peak_date": "2023-03-10",
-        "description": "Regional banking contagion triggered by Silicon Valley Bank failure"
-    }
+    "COVID_Crash": {"start": "2020-02-01", "end": "2020-04-30", "peak_date": "2020-03-23"},
+    "Fed_Hikes_2022": {"start": "2021-12-01", "end": "2022-10-31", "peak_date": "2022-06-13"},
+    "SVB_Banking_Collapse": {"start": "2023-02-15", "end": "2023-04-15", "peak_date": "2023-03-10"},
 }
 
-# Fama-French Residualization Settings
 FF_FACTORS = ["Mkt-RF", "SMB", "HML"]
 FF_RISK_FREE = "RF"
 
-# DAGMA-DYNOTEARS Model & Optimization Parameters
 DAGMA_CONFIG = {
-    "window_size": 60,           # Rolling estimation window (trading days)
-    "step_size": 5,              # Cadence between rolling fits
-    "p_lags": 1,                 # Autoregressive lag order for lagged block A
-    "hidden_dim": 16,            # Hidden units in non-linear MLP
-    "loss_type": "student-t",    # Heavy-tailed loss: 'student-t' or 'gaussian'
-    "learnable_nu": True,        # Dynamically estimate tail degrees-of-freedom nu
-    "init_nu": 3.0,              # Initial degrees of freedom (leptokurtic prior)
-    "lambda1": 0.02,             # L1 sparsity penalty
-    "T": 4,                      # Outer central-path stages
-    "mu_init": 0.1,              # Initial central-path barrier parameter
-    "mu_factor": 0.1,            # Barrier decay factor per stage
-    "s": 1.0,                    # Domain safety parameter for log-det acyclicity
-    "warm_iter": 100,            # Inner iterations for warm stages
-    "max_iter": 200,             # Inner iterations for final stage
-    "lr": 0.005,                 # Learning rate for Adam optimizer
-    "tol": 1e-6,                 # Early exit tolerance on loss change
-    "checkpoint": 50,            # Logging cadence
+    # One trading year is the primary specification; 60 days remains a robustness case.
+    "window_size": 252,
+    "step_size": 21,
+    "p_lags": 1,
+    "hidden_dim": 16,
+    "loss_type": "student-t",
+    "learnable_nu": True,
+    "init_nu": 3.0,
+    "lambda1": 0.02,
+    "T": 4,
+    "mu_init": 0.1,
+    "mu_factor": 0.1,
+    "s": 1.0,
+    "warm_iter": 100,
+    "max_iter": 200,
+    "lr": 0.005,
+    "tol": 1e-6,
+    "checkpoint": 50,
     "device": "cuda" if torch.cuda.is_available() else "cpu",
-    "dtype": torch.float64,      # Double precision essential for log-det stability
-    "n_workers": min(20, os.cpu_count() or 4) # ProcessPoolExecutor worker count
+    "dtype": torch.float64,
+    "n_workers": min(8, os.cpu_count() or 4),
 }
 
-# Precision Matrix Benchmark Settings
 PRECISION_CONFIG = {
-    "method": "graphical_lasso", # 'graphical_lasso' or 'ledoit_wolf'
     "alpha_grid": [1e-4, 5e-4, 1e-3, 5e-3, 1e-2, 5e-2, 1e-1],
     "cv_folds": 3,
-    "sparsity_threshold": 0.05
+    # Threshold is applied to partial correlations, not raw precision entries.
+    "partial_corr_threshold": 0.10,
 }
 
-# Structural Break Detection Settings
 BREAK_DETECTION_CONFIG = {
-    "metric": "frobenius",       # ||W_t - W_{t-1}||_F
-    "percentile_threshold": 95.0,# 95th percentile historical drift
-    "min_event_distance": 10     # Minimum bars between distinct break events
+    "percentile_threshold": 95.0,
+    "min_event_distance": 10,
+    "min_history": 20,
 }
 
-# CatBoost Machine Learning & Ablation Settings
 CATBOOST_CONFIG = {
     "task_type": "GPU" if torch.cuda.is_available() else "CPU",
     "devices": "0" if torch.cuda.is_available() else None,
-    "gpu_ram_part": 0.70,        # Sized safely for 8GB RTX 4060
+    "gpu_ram_part": 0.70,
     "iterations": 800,
     "depth": 6,
     "learning_rate": 0.03,
@@ -115,17 +88,18 @@ CATBOOST_CONFIG = {
     "early_stopping_rounds": 50,
     "random_seed": 42,
     "train_ratio": 0.70,
-    "verbose": 0
+    "validation_ratio": 0.20,
+    "verbose": 0,
 }
 
-# Downstream Portfolio Strategy Settings
 STRATEGY_CONFIG = {
     "initial_capital": 10000.0,
-    "transaction_cost": 0.0005,  # 5 bps per trade
-    "rebalance_cadence": 5,      # Days between regular rebalance
-    "contagion_hub_prune_k": 2,  # Number of top out-degree nodes to prune during stress
-    "risk_parity_lookback": 60,  # Volatility estimation lookback
-    "lambda_min": 2.5,           # Tightest multiplier for trailing stop during peak stress
-    "lambda_max": 4.0,           # Loosest multiplier for trailing stop during calm regime
-    "ma_window": 20              # Moving average confirmation window for cash re-entry
+    "transaction_cost": 0.0005,
+    "rebalance_cadence": 5,
+    "contagion_hub_prune_k": 2,
+    "risk_parity_lookback": 60,
+    "lambda_min": 2.5,
+    "lambda_max": 4.0,
+    "ma_window": 20,
+    "drift_history": 252,
 }
