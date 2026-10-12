@@ -31,7 +31,7 @@ result = CatBoostDagmaPipeline().run()
 For the focused tests:
 
 ```bash
-pytest -q catboost_dagma/tests/test_research_integrity_patch.py
+pytest -q catboost_dagma/tests
 ```
 
 The notebook is only a small runner. Generate report figures from a fresh pipeline run before using numerical results.
