@@ -30,9 +30,12 @@ jobs:
           python-version: "3.11"
           cache: "pip"
 
-      - run: |
+      - name: Install
+        run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt
-          pip install -e .
+          pip install torch --index-url https://download.pytorch.org/whl/cpu
+          pip install numpy pandas scipy statsmodels scikit-learn networkx catboost pandas-datareader matplotlib seaborn pytest
+          pip install -e . --no-deps
 
-      - run: pytest -q catboost_dagma/tests
+      - name: Test
+        run: pytest -q catboost_dagma/tests
