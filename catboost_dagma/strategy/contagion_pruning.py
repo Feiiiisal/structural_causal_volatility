@@ -1,39 +1,24 @@
-"""Network-aware portfolio risk overlay with chronological safeguards.
-
-The implementation is an empirical strategy benchmark, not an assertion that the
-causal overlay must outperform conventional portfolios.
-"""
+"""Portfolio test using the network signal."""
 from typing import Any, Dict, List, Optional
+
 import numpy as np
 import pandas as pd
+
 from catboost_dagma.config import STRATEGY_CONFIG
 
 
 class CausalContagionStrategy:
     def __init__(self, config: Optional[Dict[str, Any]] = None):
-        self.config = (config or STRATEGY_CONFIG).copy()
-        self.initial_capital = self.config.get("initial_capital", 10000.0)
-        self.transaction_cost = self.config.get("transaction_cost", 0.0005)
-        self.rebalance_cadence = self.config.get("rebalance_cadence", 5)
-        self.prune_k = self.config.get("contagion_hub_prune_k", 2)
-        self.lookback = self.config.get("risk_parity_lookback", 60)
-        self.lambda_min = self.config.get("lambda_min", 2.5)
-        self.lambda_max = self.config.get("lambda_max", 4.0)
-        self.ma_window = self.config.get("ma_window", 20)
-        self.drift_history = self.config.get("drift_history", 252)
-
-    def _online_drift_percentile(self, drift: pd.Series) -> np.ndarray:
-        vals = drift.astype(float).values
-        out = np.zeros(len(vals), dtype=float)
-        for i, x in enumerate(vals):
-            start = max(0, i - self.drift_history)
-            hist = vals[start:i]
-            hist = hist[np.isfinite(hist)]
-            if len(hist) >= 5 and np.isfinite(x):
-                out[i] = float(np.mean(hist <= x))
-            else:
-                out[i] = 0.0
-        return out
+        cfg = (config or STRATEGY_CONFIG).copy()
+        self.initial_capital = cfg.get("initial_capital", 10000.0)
+        self.cost = cfg.get("transaction_cost", 0.0005)
+        self.rebalance_cadence = cfg.get("rebalance_cadence", 5)
+        self.prune_k = cfg.get("contagion_hub_prune_k", 2)
+        self.lookback = cfg.get("risk_parity_lookback", 60)
+        self.lambda_min = cfg.get("lambda_min", 2.5)
+        self.lambda_max = cfg.get("lambda_max", 4.0)
+        self.ma_window = cfg.get("ma_window", 20)
+        self.drift_history = cfg.get("drift_history", 252)
 
     def backtest(
         self,
@@ -45,156 +30,235 @@ class CausalContagionStrategy:
     ) -> Dict[str, Any]:
         if returns_df.empty:
             raise ValueError("returns_df is empty")
+
+        dates = pd.DatetimeIndex(returns_df.index)
         assets = returns_df.columns.tolist()
         n_assets = len(assets)
-        dates = pd.DatetimeIndex(returns_df.index)
-        break_dates = set(pd.to_datetime(structural_breaks_df.get("date", pd.Series(dtype="datetime64[ns]")).dropna()).dt.date)
 
-        if drift_series is None:
-            records = {}
-            for i in range(1, len(rolling_dagma_results)):
-                date = pd.Timestamp(rolling_dagma_results[i]["date"])
-                records[date] = float(np.linalg.norm(rolling_dagma_results[i]["W"] - rolling_dagma_results[i - 1]["W"], ord="fro"))
-            drift_series = pd.Series(records, dtype=float)
-        drift_series = drift_series.sort_index()
+        drift = self._daily_drift(dates, rolling_dagma_results, drift_series)
+        drift_rank = self._drift_rank(drift)
+        graphs = self._graphs_by_day(dates, rolling_dagma_results)
 
-        # Forward-fill only after a drift observation exists. Never backward-fill a future signal.
-        drift_daily = drift_series.reindex(dates).ffill().fillna(0.0)
-        norm_drift = self._online_drift_percentile(drift_daily)
+        break_dates = set()
+        if "date" in structural_breaks_df:
+            break_dates = set(pd.to_datetime(structural_breaks_df["date"]).dt.date)
 
-        # Most recent graph available by each date; no graph is used before the first estimate exists.
-        dagma_sorted = sorted(rolling_dagma_results, key=lambda r: pd.Timestamp(r["date"]))
-        dagma_dates = [pd.Timestamp(r["date"]).date() for r in dagma_sorted]
-        dagma_Ws = [r["W"] for r in dagma_sorted]
-        W_for_day = []
-        idx = -1
-        for d in dates:
-            while idx + 1 < len(dagma_dates) and dagma_dates[idx + 1] <= d.date():
-                idx += 1
-            W_for_day.append(dagma_Ws[idx] if idx >= 0 else None)
+        market_return = returns_df.mean(axis=1)
+        market_price = (1 + market_return).cumprod()
+        market_ma = market_price.rolling(self.ma_window, min_periods=1).mean()
+        market_vol = market_return.rolling(
+            self.ma_window,
+            min_periods=max(5, self.ma_window // 4),
+        ).std().fillna(0.0)
 
-        mkt_rets = returns_df.mean(axis=1)
-        mkt_price = (1.0 + mkt_rets).cumprod()
-        mkt_ma = mkt_price.rolling(self.ma_window, min_periods=1).mean()
-        mkt_vol = mkt_rets.rolling(self.ma_window, min_periods=max(5, self.ma_window // 4)).std().fillna(0.0)
-        lambda_t = self.lambda_max - (self.lambda_max - self.lambda_min) * norm_drift
+        stop_scale = self.lambda_max - (
+            self.lambda_max - self.lambda_min
+        ) * drift_rank
+
+        equal = np.ones(n_assets) / n_assets
+        w_bh = equal.copy()
+        w_rp = equal.copy()
+        w_net = equal.copy()
 
         wealth_bh = [self.initial_capital]
         wealth_rp = [self.initial_capital]
-        wealth_causal = [self.initial_capital]
-        weights_bh = np.ones(n_assets) / n_assets
-        weights_rp = np.ones(n_assets) / n_assets
-        weights_causal = np.ones(n_assets) / n_assets
-        turnover_causal = 0.0
-        turnover_rp = 0.0
-        pruned_events, stop_events = [], []
+        wealth_net = [self.initial_capital]
 
-        invested = 1
-        p0 = float(mkt_price.iloc[self.lookback])
-        v0 = float(mkt_vol.iloc[self.lookback])
-        curr_stop = p0 * (1.0 - lambda_t[self.lookback] * v0)
+        rp_turnover = 0.0
+        net_turnover = 0.0
+        pruned, stops = [], []
+
+        invested = True
+        first_price = float(market_price.iloc[self.lookback])
+        first_vol = float(market_vol.iloc[self.lookback])
+        stop = first_price * (1 - stop_scale[self.lookback] * first_vol)
 
         for t in range(self.lookback, len(returns_df)):
-            current_date = dates[t].date()
-            ret_t = returns_df.iloc[t].values.astype(float)
+            ret = returns_df.iloc[t].values.astype(float)
+            day = dates[t].date()
 
-            # Today's return is earned using weights chosen previously.
-            wealth_bh.append(wealth_bh[-1] * (1.0 + float(weights_bh @ ret_t)))
-            wealth_rp.append(wealth_rp[-1] * (1.0 + float(weights_rp @ ret_t)))
-            wealth_causal.append(wealth_causal[-1] * (1.0 + float(weights_causal @ ret_t) * invested))
+            wealth_bh.append(wealth_bh[-1] * (1 + float(w_bh @ ret)))
+            wealth_rp.append(wealth_rp[-1] * (1 + float(w_rp @ ret)))
+            net_ret = float(w_net @ ret) if invested else 0.0
+            wealth_net.append(wealth_net[-1] * (1 + net_ret))
 
-            p_t = float(mkt_price.iloc[t])
-            raw_stop = p_t * (1.0 - lambda_t[t] * float(mkt_vol.iloc[t]))
-            if invested:
-                curr_stop = max(curr_stop, raw_stop)
-                if p_t < curr_stop:
-                    invested = 0
-                    stop_events.append({"date": current_date, "type": "STOP_OUT", "price": p_t, "lambda_t": float(lambda_t[t])})
-            else:
-                prev_p = float(mkt_price.iloc[t - 1])
-                if p_t > float(mkt_ma.iloc[t]) and p_t > prev_p:
-                    invested = 1
-                    curr_stop = raw_stop
-                    stop_events.append({"date": current_date, "type": "RE_ENTRY", "price": p_t})
+            invested, stop = self._update_stop(
+                t, day, invested, stop, stop_scale,
+                market_price, market_ma, market_vol, stops,
+            )
 
-            is_rebalance = (t % self.rebalance_cadence == 0)
-            is_break = current_date in break_dates
-            if not (is_rebalance or is_break):
+            is_break = day in break_dates
+            if t % self.rebalance_cadence and not is_break:
                 continue
 
-            hist = returns_df.iloc[t - self.lookback:t].values
-            vol = np.std(hist, axis=0, ddof=1) + 1e-8
-            inv = 1.0 / vol
-            new_rp = inv / inv.sum()
-            rp_turnover = float(np.abs(new_rp - weights_rp).sum())
-            wealth_rp[-1] *= max(0.0, 1.0 - rp_turnover * self.transaction_cost)
-            turnover_rp += rp_turnover
-            weights_rp = new_rp
+            new_rp = self._risk_parity_weights(returns_df.iloc[t - self.lookback:t])
+            wealth_rp[-1], turn = self._apply_cost(wealth_rp[-1], w_rp, new_rp)
+            rp_turnover += turn
+            w_rp = new_rp
 
-            raw_w = np.ones(n_assets, dtype=float)
-            pruned_names = []
-            W_t = W_for_day[t]
-            if W_t is not None:
-                out_degree = np.abs(W_t).sum(axis=1)
-                denom = out_degree.max() if out_degree.max() > 0 else 1.0
-                raw_w *= np.exp(-(out_degree / denom))
-                if is_break or norm_drift[t] > 0.60:
-                    k = min(self.prune_k, n_assets)
-                    for asset_idx in np.argsort(out_degree)[-k:]:
-                        raw_w[asset_idx] = 0.0
-                        pruned_names.append(assets[asset_idx])
-                    pruned_events.append({
-                        "date": current_date,
-                        "pruned_assets": pruned_names,
-                        "max_out_degree": float(out_degree.max()),
-                        "causal_drift": float(drift_daily.iloc[t]),
-                        "drift_percentile": float(norm_drift[t]),
-                    })
+            new_net, event = self._network_weights(
+                graphs[t], assets, is_break, drift_rank[t], day, drift.iloc[t]
+            )
+            if event:
+                pruned.append(event)
 
-            new_causal = raw_w / raw_w.sum() if raw_w.sum() > 0 else np.ones(n_assets) / n_assets
-            causal_turnover = float(np.abs(new_causal - weights_causal).sum())
-            wealth_causal[-1] *= max(0.0, 1.0 - causal_turnover * self.transaction_cost)
-            turnover_causal += causal_turnover
-            weights_causal = new_causal
+            wealth_net[-1], turn = self._apply_cost(wealth_net[-1], w_net, new_net)
+            net_turnover += turn
+            w_net = new_net
 
-        equity_index = dates[self.lookback - 1:]
         equity = pd.DataFrame({
             "Buy_And_Hold": wealth_bh,
             "Standard_Risk_Parity": wealth_rp,
-            "Causal_Contagion_Pruned": wealth_causal,
-        }, index=equity_index)
+            "Causal_Contagion_Pruned": wealth_net,
+        }, index=dates[self.lookback - 1:])
 
-        eval_equity = equity
-        if evaluation_start is not None:
-            eval_equity = equity.loc[equity.index >= pd.Timestamp(evaluation_start)].copy()
-            if len(eval_equity) >= 2:
-                eval_equity = eval_equity / eval_equity.iloc[0] * self.initial_capital
+        evaluation = equity
+        if evaluation_start:
+            evaluation = equity.loc[equity.index >= pd.Timestamp(evaluation_start)].copy()
+            if len(evaluation) > 1:
+                evaluation = evaluation / evaluation.iloc[0] * self.initial_capital
 
-        def stats(series: pd.Series) -> Dict[str, float]:
-            if len(series) < 2:
-                return {"Annualized_Return": np.nan, "Annualized_Vol": np.nan, "Sharpe_Ratio": np.nan, "Max_Drawdown": np.nan, "Calmar_Ratio": np.nan}
-            rets = series.pct_change().dropna()
-            ann_ret = (series.iloc[-1] / series.iloc[0]) ** (252.0 / max(len(rets), 1)) - 1.0
-            ann_vol = float(rets.std(ddof=1) * np.sqrt(252))
-            sharpe = ann_ret / ann_vol if ann_vol > 0 else np.nan
-            dd = series / series.cummax() - 1.0
-            max_dd = float(dd.min())
-            calmar = ann_ret / abs(max_dd) if max_dd < 0 else np.nan
-            return {
-                "Annualized_Return": round(ann_ret * 100, 2),
-                "Annualized_Vol": round(ann_vol * 100, 2),
-                "Sharpe_Ratio": round(float(sharpe), 3) if np.isfinite(sharpe) else np.nan,
-                "Max_Drawdown": round(max_dd * 100, 2),
-                "Calmar_Ratio": round(float(calmar), 3) if np.isfinite(calmar) else np.nan,
-            }
-
-        summary = {name: stats(eval_equity[name]) for name in eval_equity.columns}
         return {
             "df_equity": equity,
-            "df_equity_evaluation": eval_equity,
-            "stats_summary": summary,
-            "pruned_events_log": pd.DataFrame(pruned_events),
-            "stop_events_log": pd.DataFrame(stop_events),
-            "total_turnover": turnover_causal,
-            "risk_parity_turnover": turnover_rp,
+            "df_equity_evaluation": evaluation,
+            "stats_summary": {
+                name: self._stats(evaluation[name])
+                for name in evaluation.columns
+            },
+            "pruned_events_log": pd.DataFrame(pruned),
+            "stop_events_log": pd.DataFrame(stops),
+            "total_turnover": net_turnover,
+            "risk_parity_turnover": rp_turnover,
+        }
+
+    def _daily_drift(self, dates, results, drift_series):
+        if drift_series is None:
+            values = {}
+            for i in range(1, len(results)):
+                date = pd.Timestamp(results[i]["date"])
+                change = results[i]["W"] - results[i - 1]["W"]
+                values[date] = float(np.linalg.norm(change, "fro"))
+            drift_series = pd.Series(values, dtype=float)
+
+        return drift_series.sort_index().reindex(dates).ffill().fillna(0.0)
+
+    def _drift_rank(self, drift):
+        values = drift.values.astype(float)
+        ranks = np.zeros(len(values))
+
+        for i, value in enumerate(values):
+            start = max(0, i - self.drift_history)
+            history = values[start:i]
+            history = history[np.isfinite(history)]
+
+            if len(history) >= 5 and np.isfinite(value):
+                ranks[i] = np.mean(history <= value)
+
+        return ranks
+
+    @staticmethod
+    def _graphs_by_day(dates, results):
+        ordered = sorted(results, key=lambda item: pd.Timestamp(item["date"]))
+        graph_dates = [pd.Timestamp(item["date"]).date() for item in ordered]
+        graph_values = [item["W"] for item in ordered]
+
+        out = []
+        pos = -1
+        for date in dates:
+            while pos + 1 < len(graph_dates) and graph_dates[pos + 1] <= date.date():
+                pos += 1
+            out.append(graph_values[pos] if pos >= 0 else None)
+
+        return out
+
+    def _update_stop(
+        self,
+        t,
+        day,
+        invested,
+        stop,
+        stop_scale,
+        market_price,
+        market_ma,
+        market_vol,
+        log,
+    ):
+        price = float(market_price.iloc[t])
+        raw_stop = price * (1 - stop_scale[t] * float(market_vol.iloc[t]))
+
+        if invested:
+            stop = max(stop, raw_stop)
+            if price < stop:
+                log.append({"date": day, "type": "STOP_OUT", "price": price})
+                return False, raw_stop
+            return True, stop
+
+        previous = float(market_price.iloc[t - 1])
+        if price > float(market_ma.iloc[t]) and price > previous:
+            log.append({"date": day, "type": "RE_ENTRY", "price": price})
+            return True, raw_stop
+
+        return False, stop
+
+    @staticmethod
+    def _risk_parity_weights(history):
+        vol = history.std(ddof=1).values + 1e-8
+        inv = 1 / vol
+        return inv / inv.sum()
+
+    def _network_weights(self, W, assets, is_break, drift_rank, day, drift):
+        if W is None:
+            return np.ones(len(assets)) / len(assets), None
+
+        out_degree = np.abs(W).sum(axis=1)
+        scale = out_degree.max() or 1.0
+        weights = np.exp(-(out_degree / scale))
+
+        event = None
+        if is_break or drift_rank > 0.60:
+            ids = np.argsort(out_degree)[-min(self.prune_k, len(assets)):]
+            weights[ids] = 0.0
+            event = {
+                "date": day,
+                "pruned_assets": [assets[i] for i in ids],
+                "causal_drift": float(drift),
+            }
+
+        if weights.sum() == 0:
+            weights = np.ones(len(assets))
+
+        return weights / weights.sum(), event
+
+    def _apply_cost(self, wealth, old_weights, new_weights):
+        turnover = float(np.abs(new_weights - old_weights).sum())
+        return wealth * max(0.0, 1 - turnover * self.cost), turnover
+
+    @staticmethod
+    def _stats(series: pd.Series) -> Dict[str, float]:
+        if len(series) < 2:
+            return {
+                "Annualized_Return": np.nan,
+                "Annualized_Vol": np.nan,
+                "Sharpe_Ratio": np.nan,
+                "Max_Drawdown": np.nan,
+                "Calmar_Ratio": np.nan,
+            }
+
+        returns = series.pct_change().dropna()
+        annual_return = (series.iloc[-1] / series.iloc[0]) ** (
+            252 / max(len(returns), 1)
+        ) - 1
+        annual_vol = returns.std(ddof=1) * np.sqrt(252)
+        drawdown = series / series.cummax() - 1
+        max_drawdown = float(drawdown.min())
+
+        sharpe = annual_return / annual_vol if annual_vol > 0 else np.nan
+        calmar = annual_return / abs(max_drawdown) if max_drawdown < 0 else np.nan
+
+        return {
+            "Annualized_Return": round(annual_return * 100, 2),
+            "Annualized_Vol": round(float(annual_vol) * 100, 2),
+            "Sharpe_Ratio": round(float(sharpe), 3) if np.isfinite(sharpe) else np.nan,
+            "Max_Drawdown": round(max_drawdown * 100, 2),
+            "Calmar_Ratio": round(float(calmar), 3) if np.isfinite(calmar) else np.nan,
         }
