@@ -65,7 +65,7 @@ def plot_ff3_residualization_audit(
     _save(fig, out_path)
 
 
-def plot_empirical_orthogonality_benchmark(
+def plot_network_comparison(
     orthogonality_df: pd.DataFrame,
     vif_df: pd.DataFrame,
     out_path: Union[str, Path],
