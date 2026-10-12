@@ -4,11 +4,6 @@ import os
 import torch
 
 ROOT = Path(__file__).resolve().parent.parent
-FIGURES_DIR = ROOT / "catboost_dagma" / "figures"
-REPORTS_DIR = ROOT / "catboost_dagma" / "reports"
-
-FIGURES_DIR.mkdir(parents=True, exist_ok=True)
-REPORTS_DIR.mkdir(parents=True, exist_ok=True)
 
 _returns_path = os.getenv("SP100_DATA_PATH")
 _factors_path = os.getenv("FF_DATA_PATH")
