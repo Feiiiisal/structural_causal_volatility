@@ -1,3 +1,5 @@
+> **Superseded development artifact.** This document was imported from the earlier implementation and may contain results, wording, or architecture that predates the research-integrity corrections in the current repository. Do not use its numerical claims as final capstone results unless they are reproduced with the corrected pipeline. See `docs/reports/research_integrity_audit.md` and the root `README.md`.
+
 # Capstone Instructor Defense Report: Version 2 Architecture & Empirical Findings
 
 **Project Title:** Non-Linear Causal Topology Tracking with Student-t DAGMA & Gradient Boosted Volatility Forecasting  
