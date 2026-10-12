@@ -3,9 +3,9 @@ requires = ["setuptools>=68.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "causal_volatility"
+name = "structural-causal-volatility"
 version = "0.2.0"
-description = "Structural causal volatility networks for adaptive portfolio risk management"
+description = "Causal volatility networks for portfolio risk management"
 readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "MIT" }
@@ -13,26 +13,6 @@ authors = [
     { name = "Halkano Molu Guracha" },
     { name = "Feisel Hassan Ali" },
     { name = "Tushar Gahlot" }
-]
-keywords = [
-    "quantitative-finance",
-    "volatility",
-    "causal-inference",
-    "dagma",
-    "catboost",
-    "graphical-lasso",
-    "portfolio-risk",
-    "backtesting"
-]
-classifiers = [
-    "Development Status :: 4 - Beta",
-    "Intended Audience :: Financial and Insurance Industry",
-    "Intended Audience :: Science/Research",
-    "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.10",
-    "Programming Language :: Python :: 3.11",
-    "Programming Language :: Python :: 3.12",
-    "Topic :: Office/Business :: Financial :: Investment"
 ]
 dependencies = [
     "numpy>=1.24.0",
@@ -43,25 +23,18 @@ dependencies = [
     "networkx>=3.0",
     "torch>=2.0",
     "catboost>=1.2",
-    "arch>=6.0.0",
-    "yfinance>=0.2.28",
-    "requests>=2.28.0",
+    "pandas-datareader>=0.10",
     "matplotlib>=3.7",
     "seaborn>=0.13"
 ]
 
 [project.optional-dependencies]
-dev = [
-    "pytest>=7.0.0"
-]
-
-[project.scripts]
-causal-volatility = "causal_volatility.cli:main"
+dev = ["pytest>=7.0"]
 
 [tool.setuptools.packages.find]
-where = ["src"]
-include = ["causal_volatility*"]
+where = ["."]
+include = ["catboost_dagma*"]
 
 [tool.pytest.ini_options]
-testpaths = ["tests", "catboost_dagma/tests"]
+testpaths = ["catboost_dagma/tests"]
 python_files = ["test_*.py"]
