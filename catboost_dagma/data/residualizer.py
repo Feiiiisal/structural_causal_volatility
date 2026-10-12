@@ -1,11 +1,9 @@
-"""
-Fama-French 3-Factor Residualization Engine.
-Addresses Capstone Instructor Feedback (a):
-Strips out shared systemic market, size, and value beta from returns before causal discovery,
-ensuring that discovered DAGMA edges represent genuine idiosyncratic causal channels.
-"""
+"""Fama-French residualization utilities.
 
-from typing import Dict, List, Optional, Tuple, Union
+Residualization reduces measured exposure to included systematic factors. It does
+not, by itself, prove that remaining relationships are causal.
+"""
+from typing import Dict, List, Optional
 import numpy as np
 import pandas as pd
 import statsmodels.api as sm
@@ -13,110 +11,103 @@ from catboost_dagma.config import FF_FACTORS, FF_RISK_FREE
 
 
 class FamaFrenchResidualizer:
-    """
-    Performs multi-factor OLS regression to eliminate shared systemic beta:
-    R_{i,t} - R_{f,t} = alpha_i + beta_{i,MKT}*(R_{M,t} - R_{f,t}) + beta_{i,SMB}*SMB_t + beta_{i,HML}*HML_t + epsilon_{i,t}
-    
-    The resulting residual panel E = [epsilon_1, ..., epsilon_N] contains purely idiosyncratic
-    innovations orthogonal to systemic market drivers.
-    """
-
-    def __init__(
-        self,
-        factors: Optional[List[str]] = None,
-        risk_free_col: str = FF_RISK_FREE,
-        add_constant: bool = True,
-    ):
+    def __init__(self, factors: Optional[List[str]] = None, risk_free_col: str = FF_RISK_FREE, add_constant: bool = True):
         self.factors = factors or FF_FACTORS
         self.risk_free_col = risk_free_col
         self.add_constant = add_constant
         self.regression_summaries_: Dict[str, Dict[str, float]] = {}
 
-    def fit_transform(
+    def _aligned_excess_and_design(self, returns_df: pd.DataFrame, factors_df: pd.DataFrame):
+        dates = returns_df.index.intersection(factors_df.index).sort_values()
+        y_panel = returns_df.loc[dates].astype(float).copy()
+        f_panel = factors_df.loc[dates].astype(float).copy()
+        if self.risk_free_col in f_panel.columns:
+            y_panel = y_panel.sub(f_panel[self.risk_free_col], axis=0)
+        X = f_panel[self.factors].copy()
+        if self.add_constant:
+            X = sm.add_constant(X, has_constant="add")
+        return y_panel, X
+
+    def fit_transform(self, returns_df: pd.DataFrame, factors_df: pd.DataFrame) -> pd.DataFrame:
+        """In-sample residualization for diagnostics only.
+
+        For out-of-sample model evaluation use :meth:`fit_transform_walk_forward`.
+        """
+        y_panel, X = self._aligned_excess_and_design(returns_df, factors_df)
+        residuals = {}
+        summaries = {}
+        for col in y_panel.columns:
+            model = sm.OLS(y_panel[col].values, X.values).fit()
+            residuals[col] = model.resid
+            names = ["const"] + self.factors if self.add_constant else self.factors
+            info = dict(zip(names, model.params))
+            info["R2"] = float(model.rsquared)
+            info["Resid_Vol"] = float(np.std(model.resid, ddof=1) * np.sqrt(252))
+            summaries[col] = info
+        self.regression_summaries_ = summaries
+        return pd.DataFrame(residuals, index=y_panel.index)
+
+    def fit_transform_walk_forward(
         self,
         returns_df: pd.DataFrame,
         factors_df: pd.DataFrame,
+        min_train_size: int = 252,
+        refit_every: int = 21,
+        lookback: Optional[int] = None,
     ) -> pd.DataFrame:
+        """Chronological factor residualization without future information.
+
+        The initial training sample is residualized in-sample because it is entirely
+        historical by the first forecast date. Thereafter factor betas are estimated
+        only on observations available before each prediction block.
         """
-        Static/in-sample full-window residualization across all assets.
-        Returns DataFrame of residuals with the same index and column names as returns_df.
-        """
-        aligned_dates = returns_df.index.intersection(factors_df.index).sort_values()
-        y_panel = returns_df.loc[aligned_dates].copy()
-        f_panel = factors_df.loc[aligned_dates].copy()
+        y_panel, X = self._aligned_excess_and_design(returns_df, factors_df)
+        n = len(y_panel)
+        if n <= min_train_size:
+            raise ValueError(f"Need more than min_train_size={min_train_size} observations; got {n}.")
 
-        # Risk-free adjustment
-        if self.risk_free_col in f_panel.columns:
-            rf = f_panel[self.risk_free_col]
-            excess_returns = y_panel.sub(rf, axis=0)
-        else:
-            excess_returns = y_panel
+        Y = y_panel.values
+        Xv = X.values
+        resid = np.full_like(Y, np.nan, dtype=float)
+        columns = list(y_panel.columns)
 
-        # Factor Design Matrix X
-        X = f_panel[self.factors].copy()
-        if self.add_constant:
-            X = sm.add_constant(X)
+        def _beta(x_train: np.ndarray, y_train: np.ndarray) -> np.ndarray:
+            # lstsq is numerically safer than explicitly inverting X'X.
+            return np.linalg.lstsq(x_train, y_train, rcond=None)[0]
 
-        residuals_dict = {}
+        # Initial historical training block.
+        b0 = _beta(Xv[:min_train_size], Y[:min_train_size])
+        resid[:min_train_size] = Y[:min_train_size] - Xv[:min_train_size] @ b0
+
+        # Store initial-window diagnostics for reporting.
+        pred0 = Xv[:min_train_size] @ b0
+        ss_res = ((Y[:min_train_size] - pred0) ** 2).sum(axis=0)
+        ss_tot = ((Y[:min_train_size] - Y[:min_train_size].mean(axis=0)) ** 2).sum(axis=0)
+        names = ["const"] + self.factors if self.add_constant else self.factors
         summaries = {}
-
-        for col in y_panel.columns:
-            y = excess_returns[col].values
-            # Fit OLS
-            model = sm.OLS(y, X.values).fit()
-            resid = model.resid
-            residuals_dict[col] = resid
-
-            # Store factor exposures and R^2 for diagnostic reporting
-            param_names = ["const"] + self.factors if self.add_constant else self.factors
-            exposures = dict(zip(param_names, model.params))
-            exposures["R2"] = float(model.rsquared)
-            exposures["Resid_Vol"] = float(np.std(resid) * np.sqrt(252))
-            summaries[col] = exposures
-
+        for j, col in enumerate(columns):
+            info = {name: float(b0[k, j]) for k, name in enumerate(names)}
+            info["R2"] = float(1.0 - ss_res[j] / ss_tot[j]) if ss_tot[j] > 0 else 0.0
+            info["Resid_Vol"] = float(np.std(resid[:min_train_size, j], ddof=1) * np.sqrt(252))
+            summaries[col] = info
         self.regression_summaries_ = summaries
-        residuals_df = pd.DataFrame(residuals_dict, index=aligned_dates)
-        return residuals_df
 
-    def transform_rolling_window(
-        self,
-        returns_window: np.ndarray,
-        factors_window: np.ndarray,
-    ) -> np.ndarray:
-        """
-        High-performance vectorized residualization for rolling-window DAGMA fits.
-        Fits OLS on factors_window and projects out shared factor variation.
-        
-        Args:
-            returns_window: Array of shape (T, N)
-            factors_window: Array of shape (T, K) where K is number of factors
-        Returns:
-            residuals_window: Array of shape (T, N)
-        """
-        T, N = returns_window.shape
-        T_f, K = factors_window.shape
-        assert T == T_f, f"Mismatched window lengths: returns={T}, factors={T_f}"
+        for start in range(min_train_size, n, refit_every):
+            end = min(start + refit_every, n)
+            train_start = max(0, start - lookback) if lookback else 0
+            beta = _beta(Xv[train_start:start], Y[train_start:start])
+            resid[start:end] = Y[start:end] - Xv[start:end] @ beta
 
-        # Design matrix X: add intercept column of ones
-        ones = np.ones((T, 1), dtype=factors_window.dtype)
-        X = np.hstack([ones, factors_window]) # Shape (T, K+1)
+        return pd.DataFrame(resid, index=y_panel.index, columns=columns)
 
-        # Vectorized OLS: Beta = (X^T X)^{-1} X^T Y
-        # Compute projection matrix P = X (X^T X)^{-1} X^T
-        try:
-            XtX_inv = np.linalg.inv(X.T @ X + 1e-8 * np.eye(K + 1))
-            Beta = XtX_inv @ X.T @ returns_window # Shape (K+1, N)
-            residuals = returns_window - X @ Beta # Shape (T, N)
-            return residuals
-        except np.linalg.LinAlgError:
-            # Fallback to pseudo-inverse if singular
-            Beta = np.linalg.pinv(X) @ returns_window
-            return returns_window - X @ Beta
+    def transform_rolling_window(self, returns_window: np.ndarray, factors_window: np.ndarray) -> np.ndarray:
+        if returns_window.shape[0] != factors_window.shape[0]:
+            raise ValueError("Returns and factors must have the same number of rows.")
+        X = np.column_stack([np.ones(len(factors_window)), factors_window])
+        beta = np.linalg.lstsq(X, returns_window, rcond=None)[0]
+        return returns_window - X @ beta
 
     def get_factor_exposure_report(self) -> pd.DataFrame:
-        """
-        Returns DataFrame detailing estimated factor betas, alpha, and R^2 for all assets.
-        """
         if not self.regression_summaries_:
-            raise RuntimeError("Must call fit_transform before generating exposure report.")
+            raise RuntimeError("Call fit_transform or fit_transform_walk_forward first.")
         return pd.DataFrame.from_dict(self.regression_summaries_, orient="index")
