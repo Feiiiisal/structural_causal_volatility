@@ -1,56 +1,52 @@
-"""
-Unit tests for Precision Matrix Estimation and Empirical Orthogonality Audit.
-"""
-
 import numpy as np
 import pandas as pd
-import pytest
+
+from catboost_dagma.benchmark.orthogonality import NetworkFeatureAudit
 from catboost_dagma.benchmark.precision_matrix import PrecisionMatrixEstimator
-from catboost_dagma.benchmark.orthogonality import EmpiricalOrthogonalityAuditor
 
 
-def test_precision_matrix_estimator():
-    np.random.seed(42)
-    n, d = 60, 4
-    X = np.random.randn(n, d)
-    estimator = PrecisionMatrixEstimator(threshold=0.01)
-    p_mat, alpha = estimator.fit_precision_matrix(X)
+def test_precision_matrix_and_partial_correlations():
+    rng = np.random.default_rng(42)
+    X = rng.normal(size=(80, 4))
 
-    assert p_mat.shape == (d, d)
-    assert np.allclose(p_mat, p_mat.T)  # Must be symmetric
-    assert np.all(np.diag(p_mat) == 0.0)  # Diagonal zeroed
+    estimator = PrecisionMatrixEstimator(threshold=0.05)
+    precision, _ = estimator.fit_precision_matrix(X)
+    partial = estimator.precision_to_partial_correlation(precision)
+    topology = estimator.extract_topologies(precision)
 
-    topos = estimator.extract_topologies(p_mat)
-    assert len(topos["precision_degree"]) == d
-    assert len(topos["precision_eigen"]) == d
+    assert precision.shape == (4, 4)
+    assert np.allclose(precision, precision.T)
+    assert np.allclose(np.diag(partial), 0.0)
+    assert len(topology["precision_degree"]) == 4
+    assert len(topology["precision_eigen"]) == 4
 
 
-def test_empirical_orthogonality_auditor():
-    np.random.seed(42)
+def test_network_feature_audit():
+    rng = np.random.default_rng(4)
     n = 100
     df = pd.DataFrame({
-        "causal_in_deg": np.random.uniform(0, 5, n),
-        "causal_out_deg": np.random.uniform(0, 5, n),
-        "causal_eigen": np.random.uniform(0, 1, n),
-        "corr_deg": np.random.uniform(0, 5, n),
-        "corr_eigen": np.random.uniform(0, 1, n),
-        "precision_deg": np.random.uniform(0, 5, n),
-        "precision_eigen": np.random.uniform(0, 1, n),
-        "causal_drift": np.random.uniform(0, 2, n),
+        "causal_in_deg": rng.uniform(0, 5, n),
+        "causal_out_deg": rng.uniform(0, 5, n),
+        "causal_eigen": rng.uniform(0, 1, n),
+        "corr_deg": rng.uniform(0, 5, n),
+        "corr_eigen": rng.uniform(0, 1, n),
+        "precision_deg": rng.uniform(0, 5, n),
+        "precision_eigen": rng.uniform(0, 1, n),
+        "causal_drift": rng.uniform(0, 2, n),
     })
 
-    auditor = EmpiricalOrthogonalityAuditor()
-    ortho_df = auditor.audit_topological_correlations(df)
-    assert len(ortho_df) > 0
-    assert "Pearson_r" in ortho_df.columns
-    assert "Empirical_Verdict" in ortho_df.columns
+    audit = NetworkFeatureAudit()
+    correlations = audit.audit_topological_correlations(df)
+    vif = audit.audit_variance_inflation_factors(df)
 
-    vif_df = auditor.audit_variance_inflation_factors(df)
-    assert len(vif_df) > 0
-    assert "VIF" in vif_df.columns
-    assert "Multicollinearity_Status" in vif_df.columns
+    assert not correlations.empty
+    assert "Pearson_r" in correlations
+    assert not vif.empty
+    assert "VIF" in vif
 
-    # Directed asymmetry index on asymmetric matrix
-    W_asym = np.array([[0, 1.5, 0], [0.2, 0, 0], [0, 0.8, 0]])
-    asym_val = auditor.compute_directed_asymmetry_index(W_asym)
-    assert asym_val > 0.0  # Must be strictly positive for directed graph
+    W = np.array([
+        [0.0, 1.5, 0.0],
+        [0.2, 0.0, 0.0],
+        [0.0, 0.8, 0.0],
+    ])
+    assert audit.compute_directed_asymmetry_index(W) > 0
