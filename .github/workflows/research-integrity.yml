@@ -3,8 +3,22 @@ name: Research integrity checks
 on:
   push:
     branches: [main]
+    paths:
+      - "catboost_dagma/**"
+      - "src/**"
+      - "tests/**"
+      - "requirements.txt"
+      - "pyproject.toml"
+      - ".github/workflows/research-integrity.yml"
   pull_request:
     branches: [main]
+    paths:
+      - "catboost_dagma/**"
+      - "src/**"
+      - "tests/**"
+      - "requirements.txt"
+      - "pyproject.toml"
+      - ".github/workflows/research-integrity.yml"
   workflow_dispatch:
 
 permissions:
