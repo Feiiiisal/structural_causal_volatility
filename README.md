@@ -67,7 +67,7 @@ On Windows:
 ## Tests
 
 ```bash
-pytest -q catboost_dagma/tests/test_research_integrity_patch.py
+pytest -q catboost_dagma/tests
 ```
 
 ## Notes
@@ -76,4 +76,4 @@ This repo was rebuilt from the group's earlier implementation. The old code and 
 
 Final numerical results should come from a fresh run on the final dataset.
 
-The main review fixes are listed in [docs/reports/research_integrity_audit.md](docs/reports/research_integrity_audit.md).
+The main review fixes are listed in [docs/code_review_notes.md](docs/code_review_notes.md).
