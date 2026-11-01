@@ -1,5 +1,5 @@
 {
-  "asset_count": 19,
+  "asset_count": 20,
   "assets": [
     "AAPL",
     "MSFT",
@@ -7,6 +7,7 @@
     "GOOGL",
     "META",
     "JPM",
+    "WMT",
     "GS",
     "XOM",
     "CVX",
@@ -25,7 +26,6 @@
     "AAPL": 1.0,
     "AMZN": 1.0,
     "BA": 1.0,
-    "BAC": 0.0,
     "CAT": 1.0,
     "COST": 1.0,
     "CVX": 1.0,
@@ -41,22 +41,23 @@
     "PG": 1.0,
     "UNH": 1.0,
     "VZ": 1.0,
+    "WMT": 1.0,
     "XOM": 1.0
   },
   "factor_source": "Kenneth R. French Data Library",
   "factor_url": "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/ftp/F-F_Research_Data_Factors_daily_CSV.zip",
   "files": {
     "adjusted_close.csv": {
-      "bytes": 897876,
-      "sha256": "147d2633dae215ec0e5cf700d6e6e3f53c73c02be9c8bb3ed8cf1ca546d2e4d1"
+      "bytes": 943871,
+      "sha256": "598251bfb25e924548d5c7e534467e2290bd2329360bea41a394fd5139407579"
     },
     "factors.csv": {
       "bytes": 122746,
       "sha256": "fcec9f01f011730e5ddb0315a03de8315c09da3e2b089e1cd02625991f0d5a0f"
     },
     "returns.csv": {
-      "bytes": 1051270,
-      "sha256": "dd8247e2294357c5291572ae927dbda175a3b3ecd1c0e4683e035e8353cf1799"
+      "bytes": 1105499,
+      "sha256": "8a9eee7beabf1de7f29626cd7f1c5fb427e50acf180acecb9ba0c95d3c4457f1"
     }
   },
   "market": "us",
@@ -69,7 +70,7 @@
     "GOOGL",
     "META",
     "JPM",
-    "BAC",
+    "WMT",
     "GS",
     "XOM",
     "CVX",

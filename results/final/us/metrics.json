@@ -12,6 +12,7 @@
     "GOOGL",
     "META",
     "JPM",
+    "WMT",
     "GS",
     "XOM",
     "CVX",
@@ -30,45 +31,45 @@
   "ablation": {
     "target": "forward_volatility",
     "baseline": {
-      "train_rmse": 0.166048820728468,
-      "test_rmse": 0.1419094654777518,
-      "test_mae": 0.09227647032736157,
-      "test_r2": 0.15491650318324557
+      "train_rmse": 0.15690253171144025,
+      "test_rmse": 0.1389532241147739,
+      "test_mae": 0.09041031417404677,
+      "test_r2": 0.17335860611922027
     },
     "augmented": {
-      "train_rmse": 0.15130281879136187,
-      "test_rmse": 0.1471831710403025,
-      "test_mae": 0.09505182542880958,
-      "test_r2": 0.09093862965555555
+      "train_rmse": 0.160326137187686,
+      "test_rmse": 0.1634935701871357,
+      "test_mae": 0.11809391409959948,
+      "test_r2": -0.14440895523941388
     },
     "improvement": {
-      "rmse_reduction_pct": -3.716246513082326,
-      "delta_r2": -0.06397787352769002
+      "rmse_reduction_pct": -17.660868417196088,
+      "delta_r2": -0.31776756135863415
     }
   },
   "portfolio": {
     "Buy_And_Hold": {
-      "Annualized_Return": 20.39,
-      "Annualized_Vol": 16.35,
-      "Sharpe_Ratio": 1.247,
-      "Max_Drawdown": -22.77,
-      "Calmar_Ratio": 0.896
+      "Annualized_Return": 20.48,
+      "Annualized_Vol": 15.96,
+      "Sharpe_Ratio": 1.283,
+      "Max_Drawdown": -21.95,
+      "Calmar_Ratio": 0.933
     },
     "Standard_Risk_Parity": {
-      "Annualized_Return": 16.0,
-      "Annualized_Vol": 14.62,
-      "Sharpe_Ratio": 1.094,
-      "Max_Drawdown": -20.26,
-      "Calmar_Ratio": 0.79
+      "Annualized_Return": 16.16,
+      "Annualized_Vol": 14.3,
+      "Sharpe_Ratio": 1.13,
+      "Max_Drawdown": -19.58,
+      "Calmar_Ratio": 0.825
     },
     "Causal_Contagion_Pruned": {
-      "Annualized_Return": 11.87,
-      "Annualized_Vol": 11.41,
-      "Sharpe_Ratio": 1.041,
-      "Max_Drawdown": -20.81,
-      "Calmar_Ratio": 0.57
+      "Annualized_Return": 12.69,
+      "Annualized_Vol": 11.3,
+      "Sharpe_Ratio": 1.122,
+      "Max_Drawdown": -19.46,
+      "Calmar_Ratio": 0.652
     }
   },
-  "elapsed_seconds": 81.89514589309692,
-  "created_utc": "2026-11-01T16:02:32.535488+00:00"
+  "elapsed_seconds": 93.91945838928223,
+  "created_utc": "2026-11-01T16:09:12.714175+00:00"
 }

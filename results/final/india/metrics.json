@@ -31,20 +31,20 @@
   "ablation": {
     "target": "forward_volatility",
     "baseline": {
-      "train_rmse": 0.13745599752460694,
-      "test_rmse": 0.11122141540012523,
-      "test_mae": 0.08763324304968464,
-      "test_r2": -0.19739615474596062
+      "train_rmse": 0.1374559740778755,
+      "test_rmse": 0.11122138369097609,
+      "test_mae": 0.08763321682207602,
+      "test_r2": -0.19739613528084465
     },
     "augmented": {
-      "train_rmse": 0.08667892882511939,
-      "test_rmse": 0.10624203110615585,
-      "test_mae": 0.08161271030736346,
-      "test_r2": -0.0925812761083884
+      "train_rmse": 0.14990846309971934,
+      "test_rmse": 0.15555121094787178,
+      "test_mae": 0.1363317088746114,
+      "test_r2": -1.3421141467824826
     },
     "improvement": {
-      "rmse_reduction_pct": 4.47700137249267,
-      "delta_r2": 0.10481487863757222
+      "rmse_reduction_pct": -39.85728803740137,
+      "delta_r2": -1.144718011501638
     }
   },
   "portfolio": {
@@ -63,13 +63,13 @@
       "Calmar_Ratio": 1.306
     },
     "Causal_Contagion_Pruned": {
-      "Annualized_Return": 10.32,
-      "Annualized_Vol": 10.75,
-      "Sharpe_Ratio": 0.96,
-      "Max_Drawdown": -19.92,
-      "Calmar_Ratio": 0.518
+      "Annualized_Return": 10.71,
+      "Annualized_Vol": 10.97,
+      "Sharpe_Ratio": 0.976,
+      "Max_Drawdown": -20.91,
+      "Calmar_Ratio": 0.512
     }
   },
-  "elapsed_seconds": 123.55463814735413,
-  "created_utc": "2026-11-01T16:03:22.885660+00:00"
+  "elapsed_seconds": 83.19942784309387,
+  "created_utc": "2026-11-01T16:09:08.411633+00:00"
 }
