@@ -5,13 +5,13 @@ import torch
 
 ROOT = Path(__file__).resolve().parent.parent
 
-_returns_path = os.getenv("SP100_DATA_PATH")
+_returns_path = os.getenv("EQUITY_DATA_PATH")
 _factors_path = os.getenv("FF_DATA_PATH")
 
-SP100_PICKLE_PATH = (
+EQUITY_DATA_PATH = (
     Path(_returns_path).expanduser()
     if _returns_path
-    else ROOT / "data" / "sp100_daily_returns_2016_2026.pkl"
+    else ROOT / "data" / "equity_returns.pkl"
 )
 FF_DATA_PATH = Path(_factors_path).expanduser() if _factors_path else None
 
