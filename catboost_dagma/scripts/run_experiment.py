@@ -122,7 +122,7 @@ def main():
         window_size=args.window_size,
         step_size=args.step_size,
         n_workers=args.workers,
-        sp100_path=args.returns_path,
+        returns_path=args.returns_path,
         factor_path=args.factor_path,
         offline=not args.online_factors,
     )
