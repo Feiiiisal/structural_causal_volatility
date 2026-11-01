@@ -11,5 +11,5 @@ matplotlib>=3.7
 seaborn>=0.13
 pytest>=7.0
 
-yfinance>=0.2.54
+yfinance==0.2.66
 requests>=2.31
