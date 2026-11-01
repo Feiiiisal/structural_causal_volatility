@@ -72,7 +72,7 @@ GitHub Actions runs the test suite automatically.
 
 ## Randomness
 
-Synthetic tests use fixed NumPy seeds. CatBoost uses a fixed random seed from `catboost_dagma/config.py`.
+Synthetic tests use fixed NumPy seeds. CatBoost and the rolling DAG estimator both use fixed seeds from `catboost_dagma/config.py`. Each DAG window receives a deterministic seed derived from the base seed and its window index.
 
 ## Data provenance
 
