@@ -65,3 +65,7 @@ catboost_info/
 .env.*
 !.env.example
 
+# Generated experiment outputs
+/results/*
+!/results/README.md
+
