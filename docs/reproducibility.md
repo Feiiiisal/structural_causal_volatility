@@ -23,11 +23,11 @@ CSV and pickle files are supported.
 Set:
 
 ```bash
-export SP100_DATA_PATH=/path/to/equity_returns.pkl
+export EQUITY_DATA_PATH=/path/to/equity_returns.pkl
 export FF_DATA_PATH=/path/to/factors.csv
 ```
 
-The variable name `SP100_DATA_PATH` is retained for compatibility, but the file can contain any equity panel supplied through the pipeline.
+`EQUITY_DATA_PATH` can point to either the developed- or emerging-market return panel used for a given run.
 
 ## Run
 
@@ -43,7 +43,7 @@ The Python entry point is:
 from catboost_dagma.pipeline import CatBoostDagmaPipeline
 
 results = CatBoostDagmaPipeline(
-    sp100_path="/path/to/equity_returns.pkl",
+    returns_path="/path/to/equity_returns.pkl",
     factor_path="/path/to/factors.csv",
 ).run()
 ```
