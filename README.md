@@ -1,52 +1,126 @@
-# Structural Causal Volatility
+# Structural Causal Volatility Networks for Adaptive Risk Management
 
-MScFE 690 capstone project.
+MScFE 690 Capstone Project
 
-**Title:** Structural Causal Volatility Networks for Adaptive Risk Management in Equity Portfolios: Evidence Across Developed and Emerging Markets
+**Authors:** Halkano Molu Guracha, Feisal Ali Hassan, Tushar Gahlot
 
-**Group:** Halkano Molu Guracha, Feisal Ali Hassan, Tushar Gahlot
+## Research question
 
-## What we are testing
+Can a directed volatility network add useful risk information beyond factor exposure, correlation and conditional-dependence networks, and does that information improve out-of-sample volatility forecasts or portfolio risk control?
 
-We want to know whether a directed volatility network adds useful risk information after common market factors have been removed.
+The study compares developed- and emerging-market equity panels. The developed-market analysis uses large-cap U.S. equities. The emerging-market extension uses Indian equities. Both markets follow the same estimation and validation protocol.
 
-The main comparison is:
+## Research design
 
-- DAGMA network
-- Graphical LASSO network
-- standard correlation features
+The pipeline has six stages:
 
-The network features are then tested in a volatility forecast and a portfolio risk overlay.
+1. remove common Fama-French factor exposure from daily equity returns;
+2. construct an idiosyncratic volatility panel from the residuals;
+3. estimate a rolling directed network with a Student-t DAG model under a DAGMA acyclicity constraint;
+4. compare the directed network with correlation and Graphical LASSO benchmarks;
+5. measure structural change in the network and test whether network features improve forward-volatility forecasts;
+6. evaluate a network-aware portfolio overlay against equal-weight and inverse-volatility benchmarks.
 
-## Pipeline
+The main estimation window is 252 trading days and is updated every 21 trading days. Model selection and structural-break thresholds are based only on information available at the time. The out-of-sample period is kept separate from CatBoost early stopping and model selection.
+
+## Empirical hypotheses
+
+- **H1:** Factor adjustment materially changes the cross-sectional dependence structure of equity returns.
+- **H2:** Directed network centrality contains information that is not redundant with correlation or precision-network centrality.
+- **H3:** Large changes in network topology are associated with periods of market stress.
+- **H4:** Network features improve out-of-sample forward-volatility forecasts relative to a baseline built from market, volatility, correlation and precision-network features.
+- **H5:** A network-aware risk overlay improves downside-risk measures after transaction costs.
+- **H6:** The strength and usefulness of the network signal differ between developed and emerging markets.
+
+## Method
+
+### Factor adjustment
+
+For asset \(i\),
+
+\[
+R_{i,t}-R_{f,t}=\alpha_i+\beta_{i,M}(MKT-RF)_t+\beta_{i,S}SMB_t+\beta_{i,H}HML_t+\varepsilon_{i,t}.
+\]
+
+Betas are estimated chronologically. After the initial training window, later residuals use only information that was available before the corresponding date.
+
+### Volatility network
+
+The graph is estimated from \(|\varepsilon_{i,t}|\), a residual-based volatility proxy. The directed model uses a Student-t loss to allow for heavy-tailed innovations. A smooth log-determinant acyclicity constraint is used to estimate the contemporaneous graph.
+
+### Benchmarks
+
+The directed network is compared with:
+
+- pairwise correlation networks;
+- Graphical LASSO partial-correlation networks;
+- conventional rolling volatility and momentum features.
+
+Low correlation between network summaries is treated as evidence of non-redundancy, not as proof of causality.
+
+### Structural change
+
+For consecutive adjacency matrices \(W_t\) and \(W_{t-1}\),
+
+\[
+D_t=\lVert W_t-W_{t-1}\rVert_F.
+\]
+
+The structural-change threshold is estimated from earlier drift observations only.
+
+### Forecasting
+
+CatBoost predicts five-day forward realized volatility. The baseline model uses conventional market and dependence features. The augmented model adds directed-network centrality, network drift and break indicators.
+
+### Portfolio test
+
+The portfolio experiment compares:
+
+- equal-weight buy and hold;
+- inverse-volatility risk parity;
+- a network-aware allocation that reduces exposure to strong volatility transmitters and can reduce market exposure during stressed regimes.
+
+Transaction costs are applied to active rebalancing rules.
+
+## Repository layout
 
 ```text
-returns
-  -> Fama-French residuals
-  -> residual volatility
-  -> rolling DAGMA network
-  -> Graphical LASSO benchmark
-  -> network drift
-  -> CatBoost volatility forecast
-  -> portfolio test
-```
+catboost_dagma/
+├── benchmark/       # correlation/precision-network comparisons
+├── breaks/          # rolling network-drift detection
+├── dagma/           # directed network model and rolling solver
+├── data/            # return/factor loading and residualization
+├── ml/              # feature construction and CatBoost ablation
+├── notebooks/       # analysis notebook
+├── scripts/         # experiment runner
+├── strategy/        # portfolio experiment
+├── tests/           # unit and chronology tests
+├── visualization/   # report figures
+└── pipeline.py      # end-to-end research pipeline
 
-The main code is in `catboost_dagma/`.
+docs/
+├── research_design.md
+└── reproducibility.md
+```
 
 ## Data
 
-Set the return and factor files before running offline:
+The repository does not distribute licensed market data.
+
+The pipeline accepts CSV or pickle return panels and CSV/pickle factor panels. Set the paths with environment variables:
 
 ```bash
-export SP100_DATA_PATH=/path/to/sp100_daily_returns_2016_2026.pkl
+export SP100_DATA_PATH=/path/to/equity_returns.pkl
 export FF_DATA_PATH=/path/to/fama_french_daily.csv
 ```
 
-CSV and pickle files are supported. If `FF_DATA_PATH` is not set, the Fama-French series can be downloaded by running the pipeline with `offline=False`.
+For the U.S. panel, Fama-French daily factors can also be downloaded through `pandas-datareader` by running the loader with `offline=False`.
 
-The research data are not stored in the repo.
+For India, use an India-specific factor file and a point-in-time equity universe. Do not apply U.S. Fama-French factors to the Indian panel.
 
-## Setup
+More detail is in [docs/research_design.md](docs/research_design.md).
+
+## Installation
 
 ```bash
 git clone https://github.com/Feiiiisal/structural_causal_volatility.git
@@ -54,14 +128,34 @@ cd structural_causal_volatility
 
 python -m venv .venv
 source .venv/bin/activate
+python -m pip install --upgrade pip
 pip install -r requirements.txt
 pip install -e .
 ```
 
-On Windows:
+Windows:
 
 ```powershell
 .venv\Scripts\activate
+```
+
+## Run the study
+
+```bash
+python catboost_dagma/scripts/run_experiment.py \
+  --returns-path /path/to/equity_returns.pkl \
+  --factor-path /path/to/factors.csv
+```
+
+Or from Python:
+
+```python
+from catboost_dagma.pipeline import CatBoostDagmaPipeline
+
+results = CatBoostDagmaPipeline(
+    sp100_path="/path/to/equity_returns.pkl",
+    factor_path="/path/to/factors.csv",
+).run()
 ```
 
 ## Tests
@@ -70,10 +164,24 @@ On Windows:
 pytest -q catboost_dagma/tests
 ```
 
-## Notes
+The test suite checks data alignment, factor residualization, rolling graph estimation, precision-network construction, structural-break chronology, CatBoost train/validation/test separation and the portfolio backtest. GitHub Actions runs the same suite on pushes and pull requests.
 
-This repo was rebuilt from the group's earlier implementation. The old code and generated outputs remain available in Git history, but they are not part of the current working tree.
+## Reproducibility
 
-Final numerical results should come from a fresh run on the final dataset.
+The experiment is designed so that data preparation, graph estimation, forecasting and portfolio evaluation can be rerun from the same input panels. Chronology-sensitive tests are included to catch look-ahead leakage.
 
-The main review fixes are listed in [docs/code_review_notes.md](docs/code_review_notes.md).
+See [docs/reproducibility.md](docs/reproducibility.md) for the full protocol.
+
+## Authors
+
+This is a joint MScFE 690 capstone project by:
+
+- **Halkano Molu Guracha**
+- **Feisal Ali Hassan**
+- **Tushar Gahlot**
+
+Research design, implementation, validation, interpretation and manuscript preparation are treated as group responsibilities.
+
+## Citation
+
+If you refer to this project, use the citation in [CITATION.cff](CITATION.cff).
