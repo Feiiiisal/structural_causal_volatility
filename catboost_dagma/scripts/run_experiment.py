@@ -8,7 +8,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from catboost_dagma.config import DAGMA_CONFIG
+from catboost_dagma.config import DAGMA_CONFIG, STRATEGY_CONFIG
 from catboost_dagma.pipeline import CatBoostDagmaPipeline
 from catboost_dagma.visualization.diagnostics import (
     plot_catboost_ablation_and_importance,
@@ -32,6 +32,10 @@ def parse_args():
     parser.add_argument("--step-size", type=int, default=DAGMA_CONFIG["step_size"])
     parser.add_argument("--workers", type=int, default=DAGMA_CONFIG["n_workers"])
     parser.add_argument("--online-factors", action="store_true")
+    parser.add_argument("--volatility-proxy", choices=["absolute", "squared"], default="absolute")
+    parser.add_argument("--break-percentile", type=float, default=95.0)
+    parser.add_argument("--transaction-cost", type=float, default=STRATEGY_CONFIG["transaction_cost"])
+    parser.add_argument("--prune-k", type=int, default=STRATEGY_CONFIG["contagion_hub_prune_k"])
     parser.add_argument("--output-dir", default="results")
     return parser.parse_args()
 
@@ -60,12 +64,23 @@ def save_outputs(results, out_dir, args):
         tables / "catboost_feature_importance.csv", index=False
     )
 
+    test_predictions = results["ablation_results"]["test_df"][
+        ["date", "asset", "forward_volatility"]
+    ].copy()
+    test_predictions["pred_baseline"] = results["ablation_results"]["pred_test_base"]
+    test_predictions["pred_network"] = results["ablation_results"]["pred_test_aug"]
+    test_predictions.to_csv(tables / "forecast_test_predictions.csv", index=False)
+
     metrics = {
         "market": args.market,
         "start_date": args.start_date,
         "end_date": args.end_date,
         "window_size": args.window_size,
         "step_size": args.step_size,
+        "volatility_proxy": args.volatility_proxy,
+        "break_percentile": args.break_percentile,
+        "transaction_cost": args.transaction_cost,
+        "prune_k": args.prune_k,
         "random_seed": DAGMA_CONFIG["random_seed"],
         "assets": list(results["returns_df"].columns),
         "observations": int(len(results["returns_df"])),
@@ -116,6 +131,10 @@ def main():
     run_name = args.run_name or f"{args.market}_{datetime.now():%Y%m%d_%H%M%S}"
     out_dir = Path(args.output_dir) / run_name
 
+    strategy_config = STRATEGY_CONFIG.copy()
+    strategy_config["transaction_cost"] = args.transaction_cost
+    strategy_config["contagion_hub_prune_k"] = args.prune_k
+
     pipeline = CatBoostDagmaPipeline(
         assets=args.assets,
         start_date=args.start_date,
@@ -126,6 +145,9 @@ def main():
         returns_path=args.returns_path,
         factor_path=args.factor_path,
         offline=not args.online_factors,
+        volatility_proxy=args.volatility_proxy,
+        break_percentile=args.break_percentile,
+        strategy_config=strategy_config,
     )
     results = pipeline.run(verbose=True)
     save_outputs(results, out_dir, args)
