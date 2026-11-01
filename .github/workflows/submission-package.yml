@@ -5,6 +5,10 @@ on:
     branches: [main]
     paths:
       - ".github/workflows/submission-package.yml"
+      - "results/robustness/**"
+      - "docs/robustness_protocol.md"
+      - "docs/literature_map.md"
+      - "docs/research_design.md"
   workflow_dispatch:
 
 permissions:
@@ -19,7 +23,7 @@ jobs:
         with:
           fetch-depth: 1
 
-      - name: Download exact frozen-data artifacts from final empirical run
+      - name: Download frozen data from locked empirical run
         uses: actions/download-artifact@v4
         with:
           run-id: 41350658046
@@ -30,19 +34,26 @@ jobs:
       - name: Assemble source and reproducibility package
         run: |
           set -euo pipefail
-          mkdir -p submission/source submission/frozen_data submission/results/final submission/results/robustness
 
-          rsync -a             --exclude='.git'             --exclude='submission'             --exclude='_final_artifacts'             ./ submission/source/
+          mkdir -p submission/source
+          mkdir -p submission/frozen_data
+          mkdir -p submission/results/final
+          mkdir -p submission/results/robustness
 
-          cp -R results/final/. submission/results/final/\n          cp -R results/robustness/. submission/results/robustness/
+          rsync -a \
+            --exclude='.git' \
+            --exclude='submission' \
+            --exclude='_final_artifacts' \
+            ./ submission/source/
+
+          cp -R results/final/. submission/results/final/
+          cp -R results/robustness/. submission/results/robustness/
 
           mkdir -p _unpack_us _unpack_india
-          unzip -q _final_artifacts/final-us/*.zip -d _unpack_us || true
-          unzip -q _final_artifacts/final-india/*.zip -d _unpack_india || true
 
-          # The downloaded artifacts contain tar.gz files.
           US_TAR=$(find _final_artifacts/final-us -name '*.tar.gz' -print -quit)
           IN_TAR=$(find _final_artifacts/final-india -name '*.tar.gz' -print -quit)
+
           if [ -z "$US_TAR" ] || [ -z "$IN_TAR" ]; then
             echo "Expected frozen-data tarballs were not found." >&2
             find _final_artifacts -maxdepth 3 -type f -print
@@ -51,6 +62,7 @@ jobs:
 
           tar -xzf "$US_TAR" -C _unpack_us
           tar -xzf "$IN_TAR" -C _unpack_india
+
           cp -R _unpack_us/archive/frozen/us submission/frozen_data/us
           cp -R _unpack_india/archive/frozen/india submission/frozen_data/india
 
@@ -66,16 +78,18 @@ jobs:
 
           Repository: https://github.com/Feiiiisal/structural_causal_volatility
           Source commit: ${GITHUB_SHA}
-          Final empirical workflow run: 41350658046\n          Robustness workflow run: 41351232536
+          Locked empirical workflow run: 41350658046
+          Robustness workflow run: 41351232536
 
           ## Contents
 
           - source/: complete source-code snapshot at the submission commit
-          - frozen_data/us/: exact frozen U.S. inputs used for the reported run
-          - frozen_data/india/: exact frozen Indian inputs used for the reported run
-          - results/final/: frozen base-run tables, figures, metrics and data manifests\n          - results/robustness/: reviewer-motivated uncertainty estimates and sensitivity results
+          - frozen_data/us/: exact frozen U.S. inputs used for the locked empirical run
+          - frozen_data/india/: exact frozen Indian inputs used for the locked empirical run
+          - results/final/: base-run tables, figures, metrics and manifests
+          - results/robustness/: bootstrap uncertainty estimates and sensitivity checks
 
-          ## Reproduce
+          ## Reproduce the base run
 
           python -m venv .venv
           source .venv/bin/activate
@@ -95,10 +109,10 @@ jobs:
             --workers 2 \
             --output-dir reproduced_results
 
-          Replace us paths with india paths for the Indian run.
+          Replace the U.S. paths with the India paths for the Indian run.
 
           Random seed: 42.
-          The SHA-256 input hashes are recorded in each market's manifest.json.
+          SHA-256 input hashes are recorded in each market manifest.
           EOF
 
           (cd submission && zip -qr ../MScFE_690_Capstone_Source_and_Results.zip .)
