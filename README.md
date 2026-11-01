@@ -84,23 +84,25 @@ Transaction costs are applied to active rebalancing rules.
 
 ## Final empirical results
 
-The frozen, seeded 2016-2025 experiment is archived under [results/final](results/final).
+The frozen, seeded 2016-2025 experiment is archived under [results/final](results/final). Each market uses a fixed 20-stock balanced panel, a 252-day graph window, a 21-day update step and random seed 42.
 
 | Metric | U.S. | India |
 | --- | ---: | ---: |
 | Assets | 20 | 20 |
 | Daily observations | 2,513 | 2,469 |
 | Baseline volatility RMSE | 0.13895 | 0.11122 |
-| Network-augmented RMSE | 0.16349 | 0.15555 |
-| RMSE change | +17.66% | +39.86% |
-| Risk-parity Sharpe | 1.130 | 1.650 |
-| Network-overlay Sharpe | 1.122 | 0.976 |
+| Network-augmented RMSE | 0.13851 | 0.10452 |
+| RMSE reduction | 0.32% | 6.03% |
+| Baseline OOS R² | 0.173 | -0.197 |
+| Network OOS R² | 0.179 | -0.057 |
+| Risk-parity Sharpe | 1.131 | 1.650 |
+| Network-overlay Sharpe | 1.036 | 0.921 |
 | Risk-parity max drawdown | -19.58% | -16.43% |
-| Network-overlay max drawdown | -19.46% | -20.91% |
+| Network-overlay max drawdown | -22.46% | -19.38% |
 
-The directed-network features are not automatically useful just because they are different from correlation or precision-network features. In the final seeded run, adding them worsened out-of-sample volatility RMSE in both markets. The U.S. portfolio overlay reduced volatility and marginally improved maximum drawdown relative to risk parity, but did not improve Sharpe. In India, the network overlay underperformed risk parity on both Sharpe and maximum drawdown.
+The forecasting evidence is market dependent. Directed-network features add only a marginal improvement in the U.S. panel and a larger RMSE improvement in India, although the Indian out-of-sample R² remains negative. The portfolio result is less favourable: the network overlay reduces annualized volatility but gives up enough return that its Sharpe ratio is below risk parity in both markets, and its maximum drawdown is worse.
 
-These results are treated as findings, not as a reason to retune the model after seeing the test set.
+The project therefore does not treat directed network structure as automatically valuable. The main empirical result is that incremental forecasting information can exist without translating into a superior portfolio rule.
 
 ## Repository layout
 
