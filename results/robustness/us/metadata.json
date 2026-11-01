@@ -1,0 +1,47 @@
+{
+  "market": "us",
+  "base_assets": [
+    "AAPL",
+    "MSFT",
+    "NVDA",
+    "GOOGL",
+    "META",
+    "JPM",
+    "WMT",
+    "GS",
+    "XOM",
+    "CVX",
+    "JNJ",
+    "UNH",
+    "AMZN",
+    "HD",
+    "PG",
+    "CAT",
+    "BA",
+    "NEE",
+    "VZ",
+    "COST"
+  ],
+  "core15_assets": [
+    "AAPL",
+    "MSFT",
+    "GOOGL",
+    "JPM",
+    "WMT",
+    "XOM",
+    "JNJ",
+    "UNH",
+    "AMZN",
+    "HD",
+    "PG",
+    "CAT",
+    "NEE",
+    "VZ",
+    "COST"
+  ],
+  "uncertainty_method": {
+    "forecast": "paired 20-trading-day moving-block bootstrap over test dates; 2000 replications; HAC loss-differential test with lag 5",
+    "portfolio": "paired 20-trading-day moving-block bootstrap of daily strategy returns; 2000 replications"
+  },
+  "interpretation": "These checks are reviewer-motivated robustness analyses. They are not used to select a replacement base specification."
+}

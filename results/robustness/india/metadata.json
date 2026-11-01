@@ -1,0 +1,47 @@
+{
+  "market": "india",
+  "base_assets": [
+    "RELIANCE.NS",
+    "TCS.NS",
+    "INFY.NS",
+    "HCLTECH.NS",
+    "TECHM.NS",
+    "HDFCBANK.NS",
+    "ICICIBANK.NS",
+    "SBIN.NS",
+    "AXISBANK.NS",
+    "BHARTIARTL.NS",
+    "ITC.NS",
+    "HINDUNILVR.NS",
+    "LT.NS",
+    "M&M.NS",
+    "MARUTI.NS",
+    "SUNPHARMA.NS",
+    "NTPC.NS",
+    "POWERGRID.NS",
+    "ONGC.NS",
+    "ASIANPAINT.NS"
+  ],
+  "core15_assets": [
+    "RELIANCE.NS",
+    "TCS.NS",
+    "INFY.NS",
+    "HCLTECH.NS",
+    "TECHM.NS",
+    "HDFCBANK.NS",
+    "ITC.NS",
+    "HINDUNILVR.NS",
+    "LT.NS",
+    "M&M.NS",
+    "MARUTI.NS",
+    "SUNPHARMA.NS",
+    "NTPC.NS",
+    "POWERGRID.NS",
+    "ASIANPAINT.NS"
+  ],
+  "uncertainty_method": {
+    "forecast": "paired 20-trading-day moving-block bootstrap over test dates; 2000 replications; HAC loss-differential test with lag 5",
+    "portfolio": "paired 20-trading-day moving-block bootstrap of daily strategy returns; 2000 replications"
+  },
+  "interpretation": "These checks are reviewer-motivated robustness analyses. They are not used to select a replacement base specification."
+}

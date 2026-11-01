@@ -1,0 +1,27 @@
+{
+  "forecast": {
+    "baseline_rmse": 0.13895351383539267,
+    "network_rmse": 0.13761873057776325,
+    "rmse_reduction_pct": 0.9605969800883458,
+    "rmse_reduction_ci_low": -4.677011787924483,
+    "rmse_reduction_ci_high": 3.596688161447286,
+    "dm_hac_statistic": 0.4809843857568878,
+    "dm_hac_p_value": 0.6305275961729686,
+    "bootstrap_repetitions": 2000,
+    "block_length_days": 20
+  },
+  "portfolio": {
+    "risk_parity_sharpe": 1.130491182337857,
+    "network_sharpe": 1.312206931395894,
+    "sharpe_difference": 0.181715749058037,
+    "sharpe_difference_ci_low": -0.49043213223445165,
+    "sharpe_difference_ci_high": 0.9056044249201578,
+    "risk_parity_max_drawdown": -0.1958576705768328,
+    "network_max_drawdown": -0.12393852363343527,
+    "max_drawdown_difference": 0.07191914694339752,
+    "max_drawdown_difference_ci_low": -0.05037878146403005,
+    "max_drawdown_difference_ci_high": 0.16202004406105305,
+    "bootstrap_repetitions": 2000,
+    "block_length_days": 20
+  }
+}
