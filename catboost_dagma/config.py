@@ -23,12 +23,6 @@ DEFAULT_SECTOR_ASSETS = [
     "AMZN", "PG", "CAT", "BA", "HD",
 ]
 
-HISTORICAL_EVENTS = {
-    "COVID_Crash": {"start": "2020-02-01", "end": "2020-04-30"},
-    "Fed_Hikes_2022": {"start": "2021-12-01", "end": "2022-10-31"},
-    "SVB_Banking_Collapse": {"start": "2023-02-15", "end": "2023-04-15"},
-}
-
 FF_FACTORS = ["Mkt-RF", "SMB", "HML"]
 FF_RISK_FREE = "RF"
 
