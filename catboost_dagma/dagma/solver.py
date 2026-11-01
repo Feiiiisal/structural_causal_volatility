@@ -91,8 +91,12 @@ def train_dagma_dynotears(
     tol: float = 1e-6,
     checkpoint: int = 50,
     device: Optional[str] = None,
+    random_seed: int = 42,
     verbose: bool = False,
 ) -> DeepDynotearsMLP:
+    np.random.seed(random_seed)
+    torch.manual_seed(random_seed)
+
     device = device or ("cuda" if torch.cuda.is_available() else "cpu")
     dtype = torch.float64
 
@@ -147,6 +151,8 @@ def _fit_window(args: Tuple[int, np.ndarray, Dict[str, Any]]) -> Dict[str, Any]:
     X, Xlags = window[1:], window[:-1]
 
     params = kwargs.copy()
+    base_seed = int(params.pop("random_seed", 42))
+    params["random_seed"] = base_seed + idx
     params["device"] = "cpu"
     model = train_dagma_dynotears(X, Xlags, **params)
 
@@ -195,6 +201,7 @@ def run_parallel_rolling_dagma(
         "warm_iter": 80,
         "max_iter": 150,
         "lambda1": 0.02,
+        "random_seed": 42,
         "verbose": False,
     }
     jobs = [(i, X_data[end - window_size:end], params) for i, end in enumerate(ends)]
