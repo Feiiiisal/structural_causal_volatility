@@ -4,8 +4,6 @@ from typing import Any, Dict, List, Optional
 import numpy as np
 import pandas as pd
 
-from catboost_dagma.config import HISTORICAL_EVENTS
-
 
 class StructuralBreakDetector:
     def __init__(
@@ -80,18 +78,11 @@ class StructuralBreakDetector:
                 "window_idx": int(idx),
                 "causal_drift": float(drift.iloc[idx]),
                 "threshold": float(thresholds.iloc[idx]),
-                "matched_historical_event": self._event_name(date),
             })
             last = idx
 
         self.detected_breaks_ = events
         return pd.DataFrame(events)
-
-    def _event_name(self, date: pd.Timestamp) -> str:
-        for name, event in HISTORICAL_EVENTS.items():
-            if pd.Timestamp(event["start"]) <= date <= pd.Timestamp(event["end"]):
-                return name
-        return "Unlabelled_Structural_Change"
 
     def generate_break_features(self, drift_series: pd.Series) -> pd.DataFrame:
         drift = drift_series.sort_index().astype(float)
