@@ -140,12 +140,16 @@ def download_prices(tickers, start=START, end=END):
 
 def parse_date(values: pd.Series) -> pd.Series:
     text = values.astype(str).str.strip().str.replace(r"\.0$", "", regex=True)
-    dates = pd.to_datetime(text, format="%Y%m%d", errors="coerce")
+    compact = text.str.fullmatch(r"\d{8}")
 
-    missing = dates.isna()
-    if missing.any():
-        dates.loc[missing] = pd.to_datetime(
-            text.loc[missing], errors="coerce", dayfirst=True
+    dates = pd.Series(pd.NaT, index=text.index, dtype="datetime64[ns]")
+    if compact.any():
+        dates.loc[compact] = pd.to_datetime(
+            text.loc[compact], format="%Y%m%d", errors="coerce"
+        )
+    if (~compact).any():
+        dates.loc[~compact] = pd.to_datetime(
+            text.loc[~compact], errors="coerce"
         )
 
     return dates
