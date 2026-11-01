@@ -6,6 +6,8 @@ on:
     paths:
       - ".github/workflows/final-results.yml"
       - "catboost_dagma/scripts/freeze_market_data.py"
+      - "catboost_dagma/scripts/run_experiment.py"
+      - "catboost_dagma/config.py"
       - "requirements.txt"
       - "catboost_dagma/visualization/diagnostics.py"
       - "catboost_dagma/pipeline.py"
