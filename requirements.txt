@@ -10,3 +10,6 @@ pandas-datareader>=0.10
 matplotlib>=3.7
 seaborn>=0.13
 pytest>=7.0
+
+yfinance>=0.2.54
+requests>=2.31
