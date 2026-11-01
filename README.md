@@ -110,7 +110,7 @@ The repository does not distribute licensed market data.
 The pipeline accepts CSV or pickle return panels and CSV/pickle factor panels. Set the paths with environment variables:
 
 ```bash
-export SP100_DATA_PATH=/path/to/equity_returns.pkl
+export EQUITY_DATA_PATH=/path/to/equity_returns.pkl
 export FF_DATA_PATH=/path/to/fama_french_daily.csv
 ```
 
@@ -153,7 +153,7 @@ Or from Python:
 from catboost_dagma.pipeline import CatBoostDagmaPipeline
 
 results = CatBoostDagmaPipeline(
-    sp100_path="/path/to/equity_returns.pkl",
+    returns_path="/path/to/equity_returns.pkl",
     factor_path="/path/to/factors.csv",
 ).run()
 ```
