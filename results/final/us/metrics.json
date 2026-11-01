@@ -4,6 +4,10 @@
   "end_date": "2026-01-01",
   "window_size": 252,
   "step_size": 21,
+  "volatility_proxy": "absolute",
+  "break_percentile": 95.0,
+  "transaction_cost": 0.0005,
+  "prune_k": 2,
   "random_seed": 42,
   "assets": [
     "AAPL",
@@ -31,20 +35,20 @@
   "ablation": {
     "target": "forward_volatility",
     "baseline": {
-      "train_rmse": 0.15690255658400068,
-      "test_rmse": 0.13895325154286398,
-      "test_mae": 0.09041032811155723,
-      "test_r2": 0.1733584653211766
+      "train_rmse": 0.1569024669243089,
+      "test_rmse": 0.13895351383539267,
+      "test_mae": 0.09041128698890977,
+      "test_r2": 0.173355373930404
     },
     "augmented": {
-      "train_rmse": 0.12945326566595527,
-      "test_rmse": 0.13850948054493695,
-      "test_mae": 0.09405565933769747,
-      "test_r2": 0.17863007648925278
+      "train_rmse": 0.06242405617613639,
+      "test_rmse": 0.13761873057776322,
+      "test_mae": 0.0903813360071255,
+      "test_r2": 0.18916054221022627
     },
     "improvement": {
-      "rmse_reduction_pct": 0.3193671202362151,
-      "delta_r2": 0.0052716111680761735
+      "rmse_reduction_pct": 0.9605969800883658,
+      "delta_r2": 0.015805168279822257
     }
   },
   "portfolio": {
@@ -56,20 +60,20 @@
       "Calmar_Ratio": 0.933
     },
     "Standard_Risk_Parity": {
-      "Annualized_Return": 16.17,
+      "Annualized_Return": 16.16,
       "Annualized_Vol": 14.3,
-      "Sharpe_Ratio": 1.131,
-      "Max_Drawdown": -19.58,
-      "Calmar_Ratio": 0.826
+      "Sharpe_Ratio": 1.13,
+      "Max_Drawdown": -19.59,
+      "Calmar_Ratio": 0.825
     },
     "Causal_Contagion_Pruned": {
-      "Annualized_Return": 11.81,
-      "Annualized_Vol": 11.39,
-      "Sharpe_Ratio": 1.036,
-      "Max_Drawdown": -22.46,
-      "Calmar_Ratio": 0.526
+      "Annualized_Return": 14.76,
+      "Annualized_Vol": 11.25,
+      "Sharpe_Ratio": 1.312,
+      "Max_Drawdown": -12.39,
+      "Calmar_Ratio": 1.191
     }
   },
-  "elapsed_seconds": 115.89840841293335,
-  "created_utc": "2026-11-01T16:19:03.212826+00:00"
+  "elapsed_seconds": 118.79214549064636,
+  "created_utc": "2026-11-01T21:14:09.017146+00:00"
 }

@@ -48,16 +48,16 @@
   "factor_url": "https://faculty.iima.ac.in/iffm/Indian-Fama-French-Momentum/archive/2025-12.zip",
   "files": {
     "adjusted_close.csv": {
-      "bytes": 903023,
-      "sha256": "a37eadc16d138ae2665ed28be01acaa29506d9969ef6e0f2e9f33c24ff89d40a"
+      "bytes": 903201,
+      "sha256": "e55068f940f4b0020cb29d6e4a6c564757efc7693f257a58501c310ab5348720"
     },
     "factors.csv": {
       "bytes": 233864,
       "sha256": "08c447fc1a2afd8468631e808116e2877d0fc2ffe6fdfa071670533adaaf02df"
     },
     "returns.csv": {
-      "bytes": 1086173,
-      "sha256": "504949d0eef96d92f9a59081ec4a3d0abe3b36bcd40819e57b4c6aee87bbedbd"
+      "bytes": 1086404,
+      "sha256": "90d11903fbeb73ad9ffe014facedf89ce84a4d66e0e098d19a4ec5cf71d6c5d0"
     }
   },
   "market": "india",

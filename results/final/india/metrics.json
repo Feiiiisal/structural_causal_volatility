@@ -4,6 +4,10 @@
   "end_date": "2026-01-01",
   "window_size": 252,
   "step_size": 21,
+  "volatility_proxy": "absolute",
+  "break_percentile": 95.0,
+  "transaction_cost": 0.0005,
+  "prune_k": 2,
   "random_seed": 42,
   "assets": [
     "RELIANCE.NS",
@@ -31,20 +35,20 @@
   "ablation": {
     "target": "forward_volatility",
     "baseline": {
-      "train_rmse": 0.13745593995606012,
-      "test_rmse": 0.11122136154815347,
-      "test_mae": 0.08763319764932258,
-      "test_r2": -0.19739591099065978
+      "train_rmse": 0.1374559554488891,
+      "test_rmse": 0.11122137840637353,
+      "test_mae": 0.0876332523669049,
+      "test_r2": -0.1973959366461837
     },
     "augmented": {
-      "train_rmse": 0.08406308690511473,
-      "test_rmse": 0.1045153989013792,
-      "test_mae": 0.08121449995208473,
-      "test_r2": -0.05735767254274782
+      "train_rmse": 0.15474932010774914,
+      "test_rmse": 0.13638996657344776,
+      "test_mae": 0.11701517392977269,
+      "test_r2": -0.8006366257610908
     },
     "improvement": {
-      "rmse_reduction_pct": 6.029383702402268,
-      "delta_r2": 0.14003823844791197
+      "rmse_reduction_pct": -22.629271932878645,
+      "delta_r2": -0.6032406891149071
     }
   },
   "portfolio": {
@@ -63,13 +67,13 @@
       "Calmar_Ratio": 1.306
     },
     "Causal_Contagion_Pruned": {
-      "Annualized_Return": 10.07,
-      "Annualized_Vol": 10.93,
-      "Sharpe_Ratio": 0.921,
-      "Max_Drawdown": -19.38,
-      "Calmar_Ratio": 0.52
+      "Annualized_Return": 9.69,
+      "Annualized_Vol": 10.77,
+      "Sharpe_Ratio": 0.9,
+      "Max_Drawdown": -19.48,
+      "Calmar_Ratio": 0.498
     }
   },
-  "elapsed_seconds": 102.08576941490173,
-  "created_utc": "2026-11-01T16:18:43.939729+00:00"
+  "elapsed_seconds": 109.99351143836975,
+  "created_utc": "2026-11-01T21:13:58.093101+00:00"
 }
