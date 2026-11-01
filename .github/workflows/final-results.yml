@@ -7,7 +7,19 @@ on:
       - ".github/workflows/final-results.yml"
       - "catboost_dagma/scripts/freeze_market_data.py"
       - "requirements.txt"
+      - "catboost_dagma/visualization/diagnostics.py"
+      - "catboost_dagma/pipeline.py"
+      - "catboost_dagma/data/**"
+      - "catboost_dagma/dagma/**"
+      - "catboost_dagma/benchmark/**"
+      - "catboost_dagma/breaks/**"
+      - "catboost_dagma/ml/**"
+      - "catboost_dagma/strategy/**"
   workflow_dispatch:
+
+concurrency:
+  group: final-empirical-runs
+  cancel-in-progress: true
 
 permissions:
   contents: write
