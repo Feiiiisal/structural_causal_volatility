@@ -89,3 +89,41 @@ The final comparison should report the same diagnostics for the United States an
 - portfolio risk metrics.
 
 A cross-market conclusion is supported only if both panels are estimated under comparable chronology and data-quality rules.
+
+## Sensitivity analysis
+
+The main results should be checked against a small set of pre-specified alternatives:
+
+- graph windows of 126, 252 and 504 trading days;
+- absolute and squared residual volatility;
+- alternative Graphical LASSO penalties selected by cross-validation;
+- transaction-cost assumptions above and below the base case;
+- different hub-pruning counts;
+- alternative structural-break percentiles;
+- subperiods that separate calm and stressed market regimes.
+
+The purpose is not to search for the best-performing specification. It is to test whether the main conclusion survives reasonable design choices.
+
+## Threats to validity
+
+**Causal interpretation.** The graph is estimated from observational data. Factor residualization reduces measured common exposure but does not remove every latent confounder.
+
+**Survivorship bias.** A fixed end-of-sample constituent list can overstate historical performance. Point-in-time membership is preferred.
+
+**Factor mismatch.** The U.S. and Indian panels require market-appropriate factors. Reusing U.S. factors for India would make the residualization stage difficult to defend.
+
+**Non-stationarity.** Network structure, volatility dynamics and factor exposures can change across regimes. Rolling estimation limits but does not remove this problem.
+
+**Model-selection risk.** Window length, graph sparsity, break thresholds and portfolio rules can be overfit. Sensitivity tests are therefore reported alongside the main specification.
+
+**Economic significance.** A statistically detectable forecasting gain may be too small to matter after turnover and trading costs. Forecast and portfolio results are evaluated separately.
+
+## Method references
+
+- Fama, E. F. and French, K. R. (1993). Common risk factors in the returns on stocks and bonds. *Journal of Financial Economics*, 33(1), 3-56.
+- Friedman, J., Hastie, T. and Tibshirani, R. (2008). Sparse inverse covariance estimation with the graphical lasso. *Biostatistics*, 9(3), 432-441.
+- Diebold, F. X. and Yilmaz, K. (2014). On the network topology of variance decompositions. *Journal of Econometrics*, 182(1), 119-134.
+- Pamfil, R. et al. (2020). DYNOTEARS: Structure learning from time-series data. *Proceedings of Machine Learning Research*, 108, 1595-1605.
+- Bello, K., Aragam, B. and Ravikumar, P. (2022). DAGMA: Learning DAGs via M-matrices and a log-determinant acyclicity characterization. *Advances in Neural Information Processing Systems*, 35.
+- Prokhorenkova, L. et al. (2018). CatBoost: unbiased boosting with categorical features. *Advances in Neural Information Processing Systems*, 31.
+
