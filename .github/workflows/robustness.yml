@@ -1,0 +1,194 @@
+name: Robustness and uncertainty
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/robustness.yml"
+      - "catboost_dagma/analysis/**"
+      - "catboost_dagma/scripts/run_robustness.py"
+      - "catboost_dagma/pipeline.py"
+      - "catboost_dagma/ml/**"
+      - "catboost_dagma/strategy/**"
+      - "catboost_dagma/breaks/**"
+  workflow_dispatch:
+
+concurrency:
+  group: robustness-analysis
+  cancel-in-progress: true
+
+permissions:
+  actions: read
+  contents: write
+
+jobs:
+  market:
+    name: Robustness ${{ matrix.market }}
+    strategy:
+      fail-fast: false
+      matrix:
+        market: [us, india]
+    runs-on: ubuntu-latest
+    timeout-minutes: 330
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          pip install torch --index-url https://download.pytorch.org/whl/cpu
+          pip install -r requirements.txt
+          pip install -e . --no-deps
+
+      - name: Download frozen final data
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          run-id: 41325421793
+          name: final-${{ matrix.market }}
+          path: _artifact
+
+      - name: Extract frozen data
+        run: |
+          mkdir -p _unpack
+          TAR=$(find _artifact -name '*.tar.gz' -print -quit)
+          test -n "$TAR"
+          tar -xzf "$TAR" -C _unpack
+          ls -lah "_unpack/archive/frozen/${{ matrix.market }}"
+
+      - name: Run robustness suite
+        run: |
+          python catboost_dagma/scripts/run_robustness.py \
+            --market "${{ matrix.market }}" \
+            --returns-path "_unpack/archive/frozen/${{ matrix.market }}/returns.csv" \
+            --factor-path "_unpack/archive/frozen/${{ matrix.market }}/factors.csv" \
+            --output "robustness/${{ matrix.market }}" \
+            --workers 2
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: robustness-${{ matrix.market }}
+          path: robustness/${{ matrix.market }}
+          retention-days: 90
+
+  combine:
+    name: Archive robustness results
+    needs: market
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: robustness-*
+          path: downloaded
+
+      - name: Assemble
+        run: |
+          rm -rf results/robustness
+          mkdir -p results/robustness/us results/robustness/india
+          cp -R downloaded/robustness-us/. results/robustness/us/
+          cp -R downloaded/robustness-india/. results/robustness/india/
+
+      - name: Build cross-market summary
+        run: |
+          python - <<'PY'
+          import csv
+          import json
+          from pathlib import Path
+
+          root = Path("results/robustness")
+          lines = [
+              "# Robustness and uncertainty results",
+              "",
+              "These analyses respond to peer-review requests. They do not replace or re-select the frozen base specification.",
+              "",
+              "## Forecast uncertainty",
+              "",
+              "| Market | RMSE reduction | 95% block-bootstrap CI | HAC loss-difference p-value |",
+              "| --- | ---: | ---: | ---: |",
+          ]
+
+          for market in ("us", "india"):
+              data = json.loads((root / market / "uncertainty.json").read_text())
+              f = data["forecast"]
+              lines.append(
+                  f"| {market.upper()} | {f['rmse_reduction_pct']:.2f}% | "
+                  f"[{f['rmse_reduction_ci_low']:.2f}%, {f['rmse_reduction_ci_high']:.2f}%] | "
+                  f"{f['dm_hac_p_value']:.4f} |"
+              )
+
+          lines += [
+              "",
+              "## Portfolio uncertainty",
+              "",
+              "| Market | Sharpe difference (network - risk parity) | 95% CI | MDD difference | 95% CI |",
+              "| --- | ---: | ---: | ---: | ---: |",
+          ]
+
+          for market in ("us", "india"):
+              data = json.loads((root / market / "uncertainty.json").read_text())
+              p = data["portfolio"]
+              lines.append(
+                  f"| {market.upper()} | {p['sharpe_difference']:.3f} | "
+                  f"[{p['sharpe_difference_ci_low']:.3f}, {p['sharpe_difference_ci_high']:.3f}] | "
+                  f"{100*p['max_drawdown_difference']:.2f} pp | "
+                  f"[{100*p['max_drawdown_difference_ci_low']:.2f}, "
+                  f"{100*p['max_drawdown_difference_ci_high']:.2f}] pp |"
+              )
+
+          lines += [
+              "",
+              "## Sensitivity files",
+              "",
+              "Full variant-level results are stored in each market sensitivity.csv file.",
+              "The base specification remains the one reported in results/final.",
+              "",
+          ]
+          (root / "README.md").write_text("\n".join(lines), encoding="utf-8")
+
+          fields = [
+              "market", "variant", "assets", "rmse_reduction_pct",
+              "baseline_rmse", "network_rmse", "baseline_r2", "network_r2",
+              "risk_parity_sharpe", "network_sharpe",
+              "risk_parity_mdd", "network_mdd",
+              "window_size", "volatility_proxy", "break_percentile",
+              "transaction_cost", "prune_k", "sample_rule",
+          ]
+          rows = []
+          for market in ("us", "india"):
+              with (root / market / "sensitivity.csv").open(newline="", encoding="utf-8") as handle:
+                  for row in csv.DictReader(handle):
+                      row["market"] = market
+                      rows.append({field: row.get(field, "") for field in fields})
+
+          with (root / "sensitivity_all.csv").open("w", newline="", encoding="utf-8") as handle:
+              writer = csv.DictWriter(handle, fieldnames=fields)
+              writer.writeheader()
+              writer.writerows(rows)
+          PY
+
+      - name: Commit
+        run: |
+          git config user.name "Feisal Ali Hassan"
+          git config user.email "137709020+Feiiiisal@users.noreply.github.com"
+          git add -f results/robustness
+          git commit -m "results: add uncertainty and robustness analysis"
+          git pull --rebase origin main
+          git push
+
+      - name: Package
+        run: tar -czf MScFE_690_Robustness_Results.tar.gz results/robustness
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: MScFE-690-Robustness-Results
+          path: MScFE_690_Robustness_Results.tar.gz
+          retention-days: 90
