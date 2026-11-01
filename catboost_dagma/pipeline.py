@@ -6,7 +6,7 @@ from typing import Any, Dict, List, Optional, Union
 from catboost_dagma.benchmark.network_audit import NetworkFeatureAudit
 from catboost_dagma.benchmark.precision_matrix import PrecisionMatrixEstimator
 from catboost_dagma.breaks.structural_breaks import StructuralBreakDetector
-from catboost_dagma.config import DAGMA_CONFIG, DEFAULT_SECTOR_ASSETS
+from catboost_dagma.config import DAGMA_CONFIG
 from catboost_dagma.dagma.solver import run_parallel_rolling_dagma
 from catboost_dagma.data.loader import UnifiedDataLoader
 from catboost_dagma.data.residualizer import FamaFrenchResidualizer
@@ -28,7 +28,7 @@ class CatBoostDagmaPipeline:
         factor_path: Optional[Union[str, Path]] = None,
         offline: bool = True,
     ):
-        self.assets = assets or DEFAULT_SECTOR_ASSETS
+        self.assets = assets
         self.start_date = start_date
         self.end_date = end_date
         self.window_size = window_size
