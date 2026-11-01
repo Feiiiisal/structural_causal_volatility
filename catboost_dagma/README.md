@@ -1,37 +1,31 @@
-# catboost_dagma
+# Capstone pipeline
 
-This folder contains the current capstone pipeline.
+The `catboost_dagma` package contains the empirical pipeline used in the project.
 
-## Files
+## Modules
 
-- `data/` loads returns and removes Fama-French factor exposure.
-- `dagma/` fits the rolling directed network.
-- `benchmark/` builds the Graphical LASSO comparison.
-- `breaks/` measures changes in the network.
-- `ml/` builds features and runs the CatBoost ablation.
-- `strategy/` contains the portfolio test.
-- `pipeline.py` runs the steps together.
+- `data/`: market data loading and Fama-French residualization
+- `dagma/`: rolling directed network estimation
+- `benchmark/`: Graphical LASSO and network-feature comparisons
+- `breaks/`: network-drift and structural-change detection
+- `ml/`: forecasting features and CatBoost ablation
+- `strategy/`: portfolio experiment
+- `visualization/`: report figures
+- `tests/`: statistical and chronology checks
+- `pipeline.py`: end-to-end orchestration
 
-## Current settings
+The main graph window is 252 trading days with a 21-day update step. DAGMA and Graphical LASSO use the same residual-volatility windows. Structural-break thresholds use past observations only. The CatBoost test period is held out from early stopping and model selection.
 
-The main DAGMA window is 252 trading days and is updated every 21 trading days.
-
-DAGMA and Graphical LASSO use the same residual-volatility windows. Structural-break thresholds use past observations only. CatBoost predicts forward volatility and keeps the test period separate from model selection.
-
-## Run
-
-Set `SP100_DATA_PATH` first, then call the pipeline from Python:
-
-```python
-from catboost_dagma.pipeline import CatBoostDagmaPipeline
-
-result = CatBoostDagmaPipeline().run()
-```
-
-For the focused tests:
+Run the full test suite with:
 
 ```bash
 pytest -q catboost_dagma/tests
 ```
 
-The notebook is only a small runner. Generate report figures from a fresh pipeline run before using numerical results.
+Run an experiment with:
+
+```bash
+python catboost_dagma/scripts/run_experiment.py \
+  --returns-path /path/to/equity_returns.pkl \
+  --factor-path /path/to/factors.csv
+```
