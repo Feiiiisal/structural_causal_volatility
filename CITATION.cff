@@ -1,0 +1,22 @@
+cff-version: 1.2.0
+message: "If you use this project, please cite it as below."
+title: "Structural Causal Volatility Networks for Adaptive Risk Management in Equity Portfolios"
+type: software
+authors:
+  - family-names: "Guracha"
+    given-names: "Halkano Molu"
+  - family-names: "Hassan"
+    given-names: "Feisal Ali"
+  - family-names: "Gahlot"
+    given-names: "Tushar"
+version: 1.0.0
+date-released: 2026-11-01
+repository-code: "https://github.com/Feiiiisal/structural_causal_volatility"
+keywords:
+  - financial engineering
+  - volatility networks
+  - causal discovery
+  - DAGMA
+  - Graphical LASSO
+  - CatBoost
+  - portfolio risk management
