@@ -21,7 +21,7 @@ END = "2026-01-01"
 UNIVERSES = {
     "us": [
         "AAPL", "MSFT", "NVDA", "GOOGL", "META",
-        "JPM", "BAC", "GS", "XOM", "CVX",
+        "JPM", "WMT", "GS", "XOM", "CVX",
         "JNJ", "UNH", "AMZN", "HD", "PG",
         "CAT", "BA", "NEE", "VZ", "COST",
     ],
@@ -124,14 +124,16 @@ def download_prices(tickers, start=START, end=END):
 
     close = close.reindex(columns=[t for t in tickers if t in close.columns])
     coverage = close.notna().mean()
-    keep = coverage[coverage >= 0.98].index.tolist()
+    bad = coverage[coverage < 0.98]
 
-    if len(keep) < 15:
+    if not bad.empty:
+        details = ", ".join(f"{ticker}={value:.3f}" for ticker, value in bad.items())
         raise RuntimeError(
-            f"Only {len(keep)} stocks meet the 98% price-coverage rule: {keep}"
+            "The frozen universe is incomplete. "
+            f"Assets below the 98% price-coverage rule: {details}"
         )
 
-    close = close[keep]
+    close = close[tickers]
     returns = close.pct_change(fill_method=None)
     returns = returns.replace([np.inf, -np.inf], np.nan).dropna(how="any")
 
