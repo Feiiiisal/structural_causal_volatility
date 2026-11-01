@@ -4,6 +4,7 @@
   "end_date": "2026-01-01",
   "window_size": 252,
   "step_size": 21,
+  "random_seed": 42,
   "assets": [
     "RELIANCE.NS",
     "TCS.NS",
@@ -30,20 +31,20 @@
   "ablation": {
     "target": "forward_volatility",
     "baseline": {
-      "train_rmse": 0.1374559799878182,
-      "test_rmse": 0.11122140924246778,
-      "test_mae": 0.08763321948526012,
-      "test_r2": -0.19739557722624923
+      "train_rmse": 0.13745599752460694,
+      "test_rmse": 0.11122141540012523,
+      "test_mae": 0.08763324304968464,
+      "test_r2": -0.19739615474596062
     },
     "augmented": {
-      "train_rmse": 0.1420218008508109,
-      "test_rmse": 0.1048304859087817,
-      "test_mae": 0.08501190849358177,
-      "test_r2": -0.06374139576870586
+      "train_rmse": 0.08667892882511939,
+      "test_rmse": 0.10624203110615585,
+      "test_mae": 0.08161271030736346,
+      "test_r2": -0.0925812761083884
     },
     "improvement": {
-      "rmse_reduction_pct": 5.746126916764348,
-      "delta_r2": 0.13365418145754338
+      "rmse_reduction_pct": 4.47700137249267,
+      "delta_r2": 0.10481487863757222
     }
   },
   "portfolio": {
@@ -55,20 +56,20 @@
       "Calmar_Ratio": 1.268
     },
     "Standard_Risk_Parity": {
-      "Annualized_Return": 21.44,
+      "Annualized_Return": 21.46,
       "Annualized_Vol": 13.01,
-      "Sharpe_Ratio": 1.648,
+      "Sharpe_Ratio": 1.65,
       "Max_Drawdown": -16.43,
-      "Calmar_Ratio": 1.305
+      "Calmar_Ratio": 1.306
     },
     "Causal_Contagion_Pruned": {
-      "Annualized_Return": 11.64,
-      "Annualized_Vol": 10.98,
-      "Sharpe_Ratio": 1.06,
-      "Max_Drawdown": -18.87,
-      "Calmar_Ratio": 0.617
+      "Annualized_Return": 10.32,
+      "Annualized_Vol": 10.75,
+      "Sharpe_Ratio": 0.96,
+      "Max_Drawdown": -19.92,
+      "Calmar_Ratio": 0.518
     }
   },
-  "elapsed_seconds": 117.34967803955078,
-  "created_utc": "2026-11-01T15:56:30.786748+00:00"
+  "elapsed_seconds": 123.55463814735413,
+  "created_utc": "2026-11-01T16:03:22.885660+00:00"
 }

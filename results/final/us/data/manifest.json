@@ -1,5 +1,5 @@
 {
-  "asset_count": 20,
+  "asset_count": 19,
   "assets": [
     "AAPL",
     "MSFT",
@@ -7,7 +7,6 @@
     "GOOGL",
     "META",
     "JPM",
-    "BAC",
     "GS",
     "XOM",
     "CVX",
@@ -26,7 +25,7 @@
     "AAPL": 1.0,
     "AMZN": 1.0,
     "BA": 1.0,
-    "BAC": 1.0,
+    "BAC": 0.0,
     "CAT": 1.0,
     "COST": 1.0,
     "CVX": 1.0,
@@ -48,16 +47,16 @@
   "factor_url": "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/ftp/F-F_Research_Data_Factors_daily_CSV.zip",
   "files": {
     "adjusted_close.csv": {
-      "bytes": 944720,
-      "sha256": "59d19368cbda3702f5c5a8b7d6e0e566060cd0d9ddf2d48f5e2aff1b4cb3ebf1"
+      "bytes": 897876,
+      "sha256": "147d2633dae215ec0e5cf700d6e6e3f53c73c02be9c8bb3ed8cf1ca546d2e4d1"
     },
     "factors.csv": {
       "bytes": 122746,
       "sha256": "fcec9f01f011730e5ddb0315a03de8315c09da3e2b089e1cd02625991f0d5a0f"
     },
     "returns.csv": {
-      "bytes": 1104927,
-      "sha256": "96f07a747c69226e3112c969821966149190f32bf242b21f24ece07cc39b5bf0"
+      "bytes": 1051270,
+      "sha256": "dd8247e2294357c5291572ae927dbda175a3b3ecd1c0e4683e035e8353cf1799"
     }
   },
   "market": "us",
