@@ -109,20 +109,31 @@ def download_prices(tickers, start=START, end=END):
     )
     close = extract_close(data, tickers)
 
-    missing = [ticker for ticker in tickers if ticker not in close.columns]
-    for ticker in missing:
-        single = yf.download(
-            ticker,
-            start=start,
-            end=end,
-            auto_adjust=True,
-            progress=False,
-            threads=False,
-        )
-        if not single.empty:
-            close[ticker] = extract_close(single, [ticker]).iloc[:, 0]
+    close = close.reindex(columns=tickers)
+    first_coverage = close.notna().mean()
 
-    close = close.reindex(columns=[t for t in tickers if t in close.columns])
+    retry = [
+        ticker for ticker in tickers
+        if first_coverage.get(ticker, 0.0) < 0.98
+    ]
+
+    for ticker in retry:
+        for attempt in range(5):
+            single = yf.download(
+                ticker,
+                start=start,
+                end=end,
+                auto_adjust=True,
+                progress=False,
+                threads=False,
+            )
+            if not single.empty:
+                series = extract_close(single, [ticker]).iloc[:, 0]
+                if series.notna().mean() >= 0.98:
+                    close[ticker] = series.reindex(close.index)
+                    break
+            time.sleep(2 ** attempt)
+
     coverage = close.notna().mean()
     bad = coverage[coverage < 0.98]
 
