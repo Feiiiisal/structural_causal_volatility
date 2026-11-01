@@ -50,8 +50,8 @@ def plot_ff3_residualization_audit(
         axes[1, 0].tick_params(axis="x", rotation=45)
         axes[1, 0].set_title("Fama-French R²")
 
-    raw_corr = raw_returns.iloc[:, :10].corr().values
-    residual_corr = residuals_df.iloc[:, :10].corr().values
+    raw_corr = raw_returns.iloc[:, :10].corr().to_numpy(copy=True)
+    residual_corr = residuals_df.iloc[:, :10].corr().to_numpy(copy=True)
     np.fill_diagonal(raw_corr, np.nan)
     np.fill_diagonal(residual_corr, np.nan)
 
@@ -100,7 +100,10 @@ def plot_structural_breaks_causal_drift(
 
     ax.plot(drift_series.index, drift_series.values, label="network drift")
 
-    if np.isscalar(threshold) and np.isfinite(threshold):
+    if isinstance(threshold, pd.Series):
+        aligned = threshold.reindex(drift_series.index)
+        ax.plot(aligned.index, aligned.values, linestyle="--", label="threshold")
+    elif np.isscalar(threshold) and np.isfinite(threshold):
         ax.axhline(threshold, linestyle="--", label="threshold")
 
     if not breaks_df.empty:
