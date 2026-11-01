@@ -1,0 +1,15 @@
+feature,importance,category
+causal_drift,61.672701808174665,Network
+dagma_nu,18.023031672886425,Network
+volatility_60d,4.73036044959402,Market
+momentum_20d,4.55341458523706,Market
+corr_deg,4.239538759496281,Correlation
+volatility_20d,2.3137882852900216,Market
+corr_eigen,1.1437528165080757,Correlation
+causal_in_deg,0.9893489847172376,Network
+precision_deg,0.9044727989686719,Precision
+causal_out_deg,0.6100674408448566,Network
+precision_eigen,0.4835502755587762,Precision
+causal_eigen,0.33597212272391663,Network
+is_structural_break,0.0,Network
+days_since_last_break,0.0,Network

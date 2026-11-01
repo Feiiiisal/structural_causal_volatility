@@ -1,0 +1,90 @@
+{
+  "asset_count": 20,
+  "assets": [
+    "RELIANCE.NS",
+    "TCS.NS",
+    "INFY.NS",
+    "HCLTECH.NS",
+    "TECHM.NS",
+    "HDFCBANK.NS",
+    "ICICIBANK.NS",
+    "SBIN.NS",
+    "AXISBANK.NS",
+    "BHARTIARTL.NS",
+    "ITC.NS",
+    "HINDUNILVR.NS",
+    "LT.NS",
+    "M&M.NS",
+    "MARUTI.NS",
+    "SUNPHARMA.NS",
+    "NTPC.NS",
+    "POWERGRID.NS",
+    "ONGC.NS",
+    "ASIANPAINT.NS"
+  ],
+  "coverage_before_balancing": {
+    "ASIANPAINT.NS": 1.0,
+    "AXISBANK.NS": 1.0,
+    "BHARTIARTL.NS": 1.0,
+    "HCLTECH.NS": 1.0,
+    "HDFCBANK.NS": 1.0,
+    "HINDUNILVR.NS": 1.0,
+    "ICICIBANK.NS": 1.0,
+    "INFY.NS": 1.0,
+    "ITC.NS": 1.0,
+    "LT.NS": 1.0,
+    "M&M.NS": 1.0,
+    "MARUTI.NS": 1.0,
+    "NTPC.NS": 1.0,
+    "ONGC.NS": 1.0,
+    "POWERGRID.NS": 1.0,
+    "RELIANCE.NS": 1.0,
+    "SBIN.NS": 1.0,
+    "SUNPHARMA.NS": 1.0,
+    "TCS.NS": 1.0,
+    "TECHM.NS": 1.0
+  },
+  "factor_source": "IIM Ahmedabad Indian Fama-French and Momentum Data Library, 2025-12 release",
+  "factor_url": "https://faculty.iima.ac.in/iffm/Indian-Fama-French-Momentum/archive/2025-12.zip",
+  "files": {
+    "adjusted_close.csv": {
+      "bytes": 902923,
+      "sha256": "f26ca031acd7d2b8eea96543a2437471dd1f8e09c531a4b019203a28496eb860"
+    },
+    "factors.csv": {
+      "bytes": 233864,
+      "sha256": "08c447fc1a2afd8468631e808116e2877d0fc2ffe6fdfa071670533adaaf02df"
+    },
+    "returns.csv": {
+      "bytes": 1086161,
+      "sha256": "566250ea69296ffe537a7dbd0a00b481bab369e938ee26c74b9cd4ba310eb9d0"
+    }
+  },
+  "market": "india",
+  "observations": 2469,
+  "price_source": "Yahoo Finance via yfinance",
+  "requested_assets": [
+    "RELIANCE.NS",
+    "TCS.NS",
+    "INFY.NS",
+    "HCLTECH.NS",
+    "TECHM.NS",
+    "HDFCBANK.NS",
+    "ICICIBANK.NS",
+    "SBIN.NS",
+    "AXISBANK.NS",
+    "BHARTIARTL.NS",
+    "ITC.NS",
+    "HINDUNILVR.NS",
+    "LT.NS",
+    "M&M.NS",
+    "MARUTI.NS",
+    "SUNPHARMA.NS",
+    "NTPC.NS",
+    "POWERGRID.NS",
+    "ONGC.NS",
+    "ASIANPAINT.NS"
+  ],
+  "sample_end": "2025-12-31",
+  "sample_start": "2016-01-04"
+}

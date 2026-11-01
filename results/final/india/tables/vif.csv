@@ -1,0 +1,9 @@
+Feature,VIF,Multicollinearity_Status
+corr_deg,1.601524741804865,Low
+corr_eigen,1.7884520373080168,Low
+precision_deg,2.795081751082137,Low
+precision_eigen,2.9956813385432084,Low
+causal_in_deg,1.9392404060460575,Low
+causal_out_deg,5.181653800293893,Moderate
+causal_eigen,4.095339806638472,Low
+causal_drift,1.0720261091506997,Low

@@ -1,0 +1,90 @@
+{
+  "asset_count": 20,
+  "assets": [
+    "AAPL",
+    "MSFT",
+    "NVDA",
+    "GOOGL",
+    "META",
+    "JPM",
+    "BAC",
+    "GS",
+    "XOM",
+    "CVX",
+    "JNJ",
+    "UNH",
+    "AMZN",
+    "HD",
+    "PG",
+    "CAT",
+    "BA",
+    "NEE",
+    "VZ",
+    "COST"
+  ],
+  "coverage_before_balancing": {
+    "AAPL": 1.0,
+    "AMZN": 1.0,
+    "BA": 1.0,
+    "BAC": 1.0,
+    "CAT": 1.0,
+    "COST": 1.0,
+    "CVX": 1.0,
+    "GOOGL": 1.0,
+    "GS": 1.0,
+    "HD": 1.0,
+    "JNJ": 1.0,
+    "JPM": 1.0,
+    "META": 1.0,
+    "MSFT": 1.0,
+    "NEE": 1.0,
+    "NVDA": 1.0,
+    "PG": 1.0,
+    "UNH": 1.0,
+    "VZ": 1.0,
+    "XOM": 1.0
+  },
+  "factor_source": "Kenneth R. French Data Library",
+  "factor_url": "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/ftp/F-F_Research_Data_Factors_daily_CSV.zip",
+  "files": {
+    "adjusted_close.csv": {
+      "bytes": 944720,
+      "sha256": "59d19368cbda3702f5c5a8b7d6e0e566060cd0d9ddf2d48f5e2aff1b4cb3ebf1"
+    },
+    "factors.csv": {
+      "bytes": 122746,
+      "sha256": "fcec9f01f011730e5ddb0315a03de8315c09da3e2b089e1cd02625991f0d5a0f"
+    },
+    "returns.csv": {
+      "bytes": 1104927,
+      "sha256": "96f07a747c69226e3112c969821966149190f32bf242b21f24ece07cc39b5bf0"
+    }
+  },
+  "market": "us",
+  "observations": 2513,
+  "price_source": "Yahoo Finance via yfinance",
+  "requested_assets": [
+    "AAPL",
+    "MSFT",
+    "NVDA",
+    "GOOGL",
+    "META",
+    "JPM",
+    "BAC",
+    "GS",
+    "XOM",
+    "CVX",
+    "JNJ",
+    "UNH",
+    "AMZN",
+    "HD",
+    "PG",
+    "CAT",
+    "BA",
+    "NEE",
+    "VZ",
+    "COST"
+  ],
+  "sample_end": "2025-12-31",
+  "sample_start": "2016-01-05"
+}

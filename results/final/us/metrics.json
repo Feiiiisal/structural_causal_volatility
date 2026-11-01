@@ -1,0 +1,74 @@
+{
+  "market": "us",
+  "start_date": "2016-01-01",
+  "end_date": "2026-01-01",
+  "window_size": 252,
+  "step_size": 21,
+  "assets": [
+    "AAPL",
+    "MSFT",
+    "NVDA",
+    "GOOGL",
+    "META",
+    "JPM",
+    "BAC",
+    "GS",
+    "XOM",
+    "CVX",
+    "JNJ",
+    "UNH",
+    "AMZN",
+    "HD",
+    "PG",
+    "CAT",
+    "BA",
+    "NEE",
+    "VZ",
+    "COST"
+  ],
+  "observations": 2513,
+  "ablation": {
+    "target": "forward_volatility",
+    "baseline": {
+      "train_rmse": 0.17150292596532543,
+      "test_rmse": 0.14136252004354727,
+      "test_mae": 0.09262887977620113,
+      "test_r2": 0.1409509087132692
+    },
+    "augmented": {
+      "train_rmse": 0.1668645947854177,
+      "test_rmse": 0.1733842412782404,
+      "test_mae": 0.1325249289187857,
+      "test_r2": -0.29231584773928265
+    },
+    "improvement": {
+      "rmse_reduction_pct": -22.652200332046085,
+      "delta_r2": -0.43326675645255186
+    }
+  },
+  "portfolio": {
+    "Buy_And_Hold": {
+      "Annualized_Return": 20.28,
+      "Annualized_Vol": 16.42,
+      "Sharpe_Ratio": 1.235,
+      "Max_Drawdown": -23.42,
+      "Calmar_Ratio": 0.866
+    },
+    "Standard_Risk_Parity": {
+      "Annualized_Return": 15.93,
+      "Annualized_Vol": 14.79,
+      "Sharpe_Ratio": 1.077,
+      "Max_Drawdown": -20.99,
+      "Calmar_Ratio": 0.759
+    },
+    "Causal_Contagion_Pruned": {
+      "Annualized_Return": 12.04,
+      "Annualized_Vol": 11.63,
+      "Sharpe_Ratio": 1.035,
+      "Max_Drawdown": -20.1,
+      "Calmar_Ratio": 0.599
+    }
+  },
+  "elapsed_seconds": 111.51880717277527,
+  "created_utc": "2026-11-01T15:56:18.048198+00:00"
+}

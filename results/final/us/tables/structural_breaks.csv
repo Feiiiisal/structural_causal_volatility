@@ -1,0 +1,3 @@
+date,window_idx,causal_drift,threshold,matched_historical_event
+2018-10-03,21,0.7625836936616595,0.7304740348097649,Unlabelled_Structural_Change
+2021-09-03,56,0.7691142720570576,0.7650848872411419,Unlabelled_Structural_Change

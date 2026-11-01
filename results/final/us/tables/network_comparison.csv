@@ -1,0 +1,9 @@
+Comparison,Feature_A,Feature_B,Pearson_r,Pearson_p,Spearman_rho,Spearman_p,Empirical_Verdict
+Causal in-degree vs correlation degree,causal_in_deg,corr_deg,-0.005870318325152703,0.7851052355182496,-0.0011560946805368576,0.9571747078529811,Low association
+Causal out-degree vs correlation degree,causal_out_deg,corr_deg,-0.0008650358196937713,0.967949648395339,0.006604526175694124,0.7590136462424154,Low association
+Causal eigen vs correlation eigen,causal_eigen,corr_eigen,0.00825356504710209,0.7014413482754288,0.007147962360844036,0.7398747530762171,Low association
+Causal in-degree vs precision degree,causal_in_deg,precision_deg,-0.0019767145310642907,0.9268439933295219,0.04092621569789167,0.05720066024130722,Low association
+Causal out-degree vs precision degree,causal_out_deg,precision_deg,8.466176704408426e-05,0.9968623703546359,-0.004736504015399106,0.8258659971042196,Low association
+Causal eigen vs precision eigen,causal_eigen,precision_eigen,-0.012372898586077439,0.5654742575369689,-0.020966147401331504,0.33007566653565124,Low association
+Precision degree vs correlation degree,precision_deg,corr_deg,0.1968974681565245,2.5534364381481923e-20,0.19534090007152746,5.1055459147870746e-20,Low association
+Precision eigen vs correlation eigen,precision_eigen,corr_eigen,0.22911287636782196,4.016431300848089e-27,0.23007710642305856,2.4155729863491953e-27,Low association
