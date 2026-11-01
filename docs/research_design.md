@@ -8,18 +8,18 @@ The empirical design is deliberately comparative. A directed network is not trea
 
 ## Markets
 
-Two equity settings are considered:
+Two fixed large-cap equity panels are used:
 
-1. **Developed market:** large-cap U.S. equities.
-2. **Emerging market:** Indian equities, using a liquid point-in-time universe such as the Nifty 50 constituent set available at each date.
+1. **Developed market:** 20 U.S. equities.
+2. **Emerging market:** 20 Indian equities listed on the NSE.
 
-The cross-market comparison uses the same model architecture, rolling-window design and evaluation metrics. Factor data must be market appropriate.
+The panels cover 2016-2025 and require at least 98% price coverage before return alignment. The cross-market comparison uses the same model architecture, rolling-window design and evaluation metrics. Factor data are market specific.
 
 ## Sample construction
 
-The preferred common research window is 2016-2025 because it provides a long daily history and allows the two markets to be compared over the same calendar period.
+The common research window is 2016-2025. The frozen U.S. panel contains 20 stocks and 2,513 aligned daily observations; the Indian panel contains 20 stocks and 2,469 aligned observations.
 
-Constituent membership should be handled point in time where the required history is available. A fixed end-of-sample constituent list can create survivorship bias and should be disclosed if used as a sensitivity sample.
+The study uses fixed balanced panels rather than reconstructed historical index memberships. This makes the cross-market estimation design comparable and reproducible, but it introduces selection and survivorship bias because firms without continuous histories are excluded. Results therefore describe these large-cap panels and should not be interpreted as index-replication results.
 
 ## Stage 1: factor residualization
 
@@ -54,7 +54,7 @@ Directed and undirected centralities are compared using Pearson/Spearman associa
 
 ## Stage 5: structural change
 
-Network drift is measured by the Frobenius distance between consecutive adjacency matrices. The break threshold is estimated from past drift observations. Historical crisis labels are used after detection for interpretation, not for setting the threshold.
+Network drift is measured by the Frobenius distance between consecutive adjacency matrices. The break threshold is estimated from past drift observations. The detector does not assign market-event labels automatically. Event interpretation is performed separately after the break dates are estimated.
 
 ## Stage 6: volatility forecasting
 
@@ -108,7 +108,7 @@ The purpose is not to search for the best-performing specification. It is to tes
 
 **Causal interpretation.** The graph is estimated from observational data. Factor residualization reduces measured common exposure but does not remove every latent confounder.
 
-**Survivorship bias.** A fixed end-of-sample constituent list can overstate historical performance. Point-in-time membership is preferred.
+**Selection and survivorship bias.** The fixed balanced panels require continuous history and therefore exclude firms that listed late, delisted or lacked sufficient data. This can overstate stability relative to the full investable market.
 
 **Factor mismatch.** The U.S. and Indian panels require market-appropriate factors. Reusing U.S. factors for India would make the residualization stage difficult to defend.
 
