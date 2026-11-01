@@ -5,7 +5,6 @@ from typing import List, Optional, Tuple
 import pandas as pd
 
 from catboost_dagma.config import (
-    DEFAULT_SECTOR_ASSETS,
     FF_DATA_PATH,
     FF_FACTORS,
     FF_RISK_FREE,
@@ -53,12 +52,14 @@ class UnifiedDataLoader:
         df = self._read_frame(self.returns_path)
         df = df.dropna(axis=1, thresh=int(len(df) * min_history_pct))
 
-        requested = assets or DEFAULT_SECTOR_ASSETS
-        available = [name for name in requested if name in df.columns]
+        if assets is None:
+            return df.dropna()
+
+        available = [name for name in assets if name in df.columns]
         if not available:
             raise ValueError("None of the requested assets are in the return data.")
 
-        missing = sorted(set(requested) - set(available))
+        missing = sorted(set(assets) - set(available))
         if missing:
             print("[data] skipped:", ", ".join(missing))
 
