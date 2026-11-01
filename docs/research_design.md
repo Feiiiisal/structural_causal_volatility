@@ -127,3 +127,15 @@ The purpose is not to search for the best-performing specification. It is to tes
 - Bello, K., Aragam, B. and Ravikumar, P. (2022). DAGMA: Learning DAGs via M-matrices and a log-determinant acyclicity characterization. *Advances in Neural Information Processing Systems*, 35.
 - Prokhorenkova, L. et al. (2018). CatBoost: unbiased boosting with categorical features. *Advances in Neural Information Processing Systems*, 31.
 
+## Completed robustness analysis
+
+Peer review requested uncertainty estimates and evidence that the conclusions were not an artifact of one modelling choice. The frozen base run was therefore supplemented with paired moving-block bootstrap intervals, a HAC forecast-loss comparison and a set of one-at-a-time sensitivity checks.
+
+The U.S. forecast improvement is small and uncertain: the base RMSE reduction is 0.96%, with a 95% bootstrap interval from -4.68% to 3.60% and a HAC loss-difference p-value of 0.631. Among the six sensitivity variants that alter the forecast model or sample, three improve RMSE and three worsen it.
+
+The Indian base result is more decisive in the opposite direction. Network augmentation worsens RMSE by 22.63%; the 95% interval is -35.55% to -1.19% and the HAC p-value is 0.003. Five of six forecast-relevant variants also worsen RMSE. The exception is the 15-stock composition check, which improves RMSE by 2.72% but still leaves both baseline and augmented out-of-sample R-squared below zero.
+
+Portfolio conclusions are also asymmetric. The U.S. base network overlay has a Sharpe advantage of 0.182 over risk parity, but the 95% bootstrap interval spans -0.490 to 0.906. Seven of ten non-base portfolio variants retain a higher network Sharpe. In India, the network-minus-risk-parity Sharpe difference is -0.750 with a 95% interval of -1.288 to -0.239, and every non-base sensitivity variant has a lower network Sharpe than risk parity.
+
+These results are treated as robustness evidence, not as an opportunity to choose a new base model after observing the test set.
+
