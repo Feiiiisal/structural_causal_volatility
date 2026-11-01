@@ -50,6 +50,31 @@ def test_student_t_loss_and_degrees_of_freedom():
     assert nu >= 2.0
 
 
+def test_seeded_training_is_reproducible():
+    rng = np.random.default_rng(11)
+    X_curr = rng.normal(size=(30, 3))
+    X_lags = rng.normal(size=(30, 3))
+
+    first = train_dagma_dynotears(
+        X_curr, X_lags,
+        T=1, warm_iter=5, max_iter=8,
+        random_seed=123,
+        verbose=False,
+    )
+    second = train_dagma_dynotears(
+        X_curr, X_lags,
+        T=1, warm_iter=5, max_iter=8,
+        random_seed=123,
+        verbose=False,
+    )
+
+    np.testing.assert_allclose(
+        tensor_to_numpy(first.get_W_adj()),
+        tensor_to_numpy(second.get_W_adj()),
+        atol=1e-12,
+    )
+
+
 def test_dagma_h_func_logdet():
     d = 3
     p = 1
