@@ -27,6 +27,10 @@ class CatBoostDagmaPipeline:
         returns_path: Optional[Union[str, Path]] = None,
         factor_path: Optional[Union[str, Path]] = None,
         offline: bool = True,
+        volatility_proxy: str = "absolute",
+        break_percentile: float = 95.0,
+        strategy_config: Optional[Dict[str, Any]] = None,
+        catboost_config: Optional[Dict[str, Any]] = None,
     ):
         self.assets = assets
         self.start_date = start_date
@@ -37,6 +41,10 @@ class CatBoostDagmaPipeline:
         self.returns_path = Path(returns_path) if returns_path else None
         self.factor_path = Path(factor_path) if factor_path else None
         self.offline = offline
+        self.volatility_proxy = volatility_proxy
+        self.break_percentile = break_percentile
+        self.strategy_config = strategy_config
+        self.catboost_config = catboost_config
 
     def run(self, verbose: bool = True) -> Dict[str, Any]:
         started = time.time()
@@ -54,8 +62,14 @@ class CatBoostDagmaPipeline:
             min_train_size=min(252, max(60, self.window_size)),
             refit_every=self.step_size,
         )
-        residual_vol = residuals.abs()
-        self._log(verbose, "factor adjustment done")
+        if self.volatility_proxy == "absolute":
+            residual_vol = residuals.abs()
+        elif self.volatility_proxy == "squared":
+            residual_vol = residuals.pow(2)
+        else:
+            raise ValueError("volatility_proxy must be 'absolute' or 'squared'.")
+
+        self._log(verbose, f"factor adjustment done ({self.volatility_proxy} residual proxy)")
 
         dagma = run_parallel_rolling_dagma(
             residual_vol.values,
@@ -81,7 +95,7 @@ class CatBoostDagmaPipeline:
         precision = self._precision_results(residual_vol, dagma)
 
         detector = StructuralBreakDetector(
-            percentile_threshold=95.0,
+            percentile_threshold=self.break_percentile,
             min_history=20,
             history_window=252,
         )
@@ -97,10 +111,13 @@ class CatBoostDagmaPipeline:
         network_comparison = audit.audit_topological_correlations(features)
         vif = audit.audit_variance_inflation_factors(features)
 
-        catboost = CatBoostFusionModel(target_col="forward_volatility")
+        catboost = CatBoostFusionModel(
+            config=self.catboost_config,
+            target_col="forward_volatility",
+        )
         ablation = catboost.run_ablation_study(features, split_date="2021-01-01")
 
-        strategy = CausalContagionStrategy()
+        strategy = CausalContagionStrategy(config=self.strategy_config)
         strategy_results = strategy.backtest(
             returns,
             dagma,
