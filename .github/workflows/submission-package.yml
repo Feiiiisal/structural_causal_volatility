@@ -30,11 +30,11 @@ jobs:
       - name: Assemble source and reproducibility package
         run: |
           set -euo pipefail
-          mkdir -p submission/source submission/frozen_data submission/results
+          mkdir -p submission/source submission/frozen_data submission/results/final submission/results/robustness
 
           rsync -a             --exclude='.git'             --exclude='submission'             --exclude='_final_artifacts'             ./ submission/source/
 
-          cp -R results/final/. submission/results/
+          cp -R results/final/. submission/results/final/\n          cp -R results/robustness/. submission/results/robustness/
 
           mkdir -p _unpack_us _unpack_india
           unzip -q _final_artifacts/final-us/*.zip -d _unpack_us || true
@@ -66,14 +66,14 @@ jobs:
 
           Repository: https://github.com/Feiiiisal/structural_causal_volatility
           Source commit: ${GITHUB_SHA}
-          Final empirical workflow run: 41350658046
+          Final empirical workflow run: 41350658046\n          Robustness workflow run: 41351232536
 
           ## Contents
 
           - source/: complete source-code snapshot at the submission commit
           - frozen_data/us/: exact frozen U.S. inputs used for the reported run
           - frozen_data/india/: exact frozen Indian inputs used for the reported run
-          - results/: final tables, figures, metrics and data manifests
+          - results/final/: frozen base-run tables, figures, metrics and data manifests\n          - results/robustness/: reviewer-motivated uncertainty estimates and sensitivity results
 
           ## Reproduce
 
