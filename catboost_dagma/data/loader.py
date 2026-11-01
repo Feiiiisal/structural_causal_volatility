@@ -9,18 +9,18 @@ from catboost_dagma.config import (
     FF_DATA_PATH,
     FF_FACTORS,
     FF_RISK_FREE,
-    SP100_PICKLE_PATH,
+    EQUITY_DATA_PATH,
 )
 
 
 class UnifiedDataLoader:
     def __init__(
         self,
-        sp100_path: Optional[Path] = None,
+        returns_path: Optional[Path] = None,
         factor_path: Optional[Path] = None,
         offline: bool = True,
     ):
-        self.sp100_path = Path(sp100_path).expanduser() if sp100_path else SP100_PICKLE_PATH
+        self.returns_path = Path(returns_path).expanduser() if returns_path else EQUITY_DATA_PATH
         self.factor_path = Path(factor_path).expanduser() if factor_path else FF_DATA_PATH
         self.offline = offline
 
@@ -40,17 +40,17 @@ class UnifiedDataLoader:
 
         return df.sort_index()[~df.index.duplicated(keep="last")]
 
-    def load_sp100_returns(
+    def load_returns(
         self,
         assets: Optional[List[str]] = None,
         min_history_pct: float = 0.95,
     ) -> pd.DataFrame:
-        if not self.sp100_path.exists():
+        if not self.returns_path.exists():
             raise FileNotFoundError(
-                f"Return data not found at {self.sp100_path}. Set SP100_DATA_PATH."
+                f"Return data not found at {self.returns_path}. Set EQUITY_DATA_PATH."
             )
 
-        df = self._read_frame(self.sp100_path)
+        df = self._read_frame(self.returns_path)
         df = df.dropna(axis=1, thresh=int(len(df) * min_history_pct))
 
         requested = assets or DEFAULT_SECTOR_ASSETS
@@ -116,7 +116,7 @@ class UnifiedDataLoader:
         start_date: str = "2016-01-01",
         end_date: str = "2026-01-01",
     ) -> Tuple[pd.DataFrame, pd.DataFrame]:
-        returns = self.load_sp100_returns(assets)
+        returns = self.load_returns(assets)
         factors = self.load_fama_french_factors(start_date, end_date)
 
         start, end = pd.Timestamp(start_date), pd.Timestamp(end_date)
