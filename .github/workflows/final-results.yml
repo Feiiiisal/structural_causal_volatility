@@ -118,9 +118,9 @@ jobs:
       - name: Build cross-market summary
         run: |
           python - <<'PY'
+          import csv
           import json
           from pathlib import Path
-          import pandas as pd
 
           root = Path("results/final")
           rows = []
@@ -141,8 +141,28 @@ jobs:
                   "risk_parity_max_drawdown": portfolio["Standard_Risk_Parity"]["Max_Drawdown"],
               })
 
-          frame = pd.DataFrame(rows)
-          frame.to_csv(root / "cross_market_summary.csv", index=False)
+          fields = list(rows[0])
+          with (root / "cross_market_summary.csv").open("w", newline="", encoding="utf-8") as handle:
+              writer = csv.DictWriter(handle, fieldnames=fields)
+              writer.writeheader()
+              writer.writerows(rows)
+
+          def fmt(value):
+              if isinstance(value, float):
+                  return f"{value:.6f}"
+              return str(value)
+
+          widths = {
+              field: max(len(field), *(len(fmt(row[field])) for row in rows))
+              for field in fields
+          }
+
+          header = "| " + " | ".join(field.ljust(widths[field]) for field in fields) + " |"
+          rule = "| " + " | ".join("-" * widths[field] for field in fields) + " |"
+          body = [
+              "| " + " | ".join(fmt(row[field]).ljust(widths[field]) for field in fields) + " |"
+              for row in rows
+          ]
 
           lines = [
               "# Final empirical results",
@@ -154,7 +174,9 @@ jobs:
               "",
               "## Cross-market summary",
               "",
-              frame.to_markdown(index=False),
+              header,
+              rule,
+              *body,
               "",
               "Each market folder contains the run metrics, tables, figures and the SHA-256 manifest",
               "for the frozen inputs. The raw frozen data are retained in the private GitHub Actions",
