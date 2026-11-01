@@ -84,25 +84,25 @@ Transaction costs are applied to active rebalancing rules.
 
 ## Final empirical results
 
-The frozen, seeded 2016-2025 experiment is archived under [results/final](results/final). Each market uses a fixed 20-stock balanced panel, a 252-day graph window, a 21-day update step and random seed 42.
+The frozen, seeded 2016-2025 experiment is archived under [results/final](results/final). The submission data snapshot is locked to GitHub Actions run **41350658046**; later robustness checks use those exact files rather than redownloading market history.
 
 | Metric | U.S. | India |
 | --- | ---: | ---: |
 | Assets | 20 | 20 |
 | Daily observations | 2,513 | 2,469 |
 | Baseline volatility RMSE | 0.13895 | 0.11122 |
-| Network-augmented RMSE | 0.13851 | 0.10452 |
-| RMSE reduction | 0.32% | 6.03% |
+| Network-augmented RMSE | 0.13762 | 0.13639 |
+| RMSE change | 0.96% improvement | 22.63% deterioration |
 | Baseline OOS R² | 0.173 | -0.197 |
-| Network OOS R² | 0.179 | -0.057 |
-| Risk-parity Sharpe | 1.131 | 1.650 |
-| Network-overlay Sharpe | 1.036 | 0.921 |
-| Risk-parity max drawdown | -19.58% | -16.43% |
-| Network-overlay max drawdown | -22.46% | -19.38% |
+| Network OOS R² | 0.189 | -0.801 |
+| Risk-parity Sharpe | 1.130 | 1.650 |
+| Network-overlay Sharpe | 1.312 | 0.900 |
+| Risk-parity max drawdown | -19.59% | -16.43% |
+| Network-overlay max drawdown | -12.39% | -19.48% |
 
-The forecasting evidence is market dependent. Directed-network features add only a marginal improvement in the U.S. panel and a larger RMSE improvement in India, although the Indian out-of-sample R² remains negative. The portfolio result is less favourable: the network overlay reduces annualized volatility but gives up enough return that its Sharpe ratio is below risk parity in both markets, and its maximum drawdown is worse.
+The result is market dependent. In the U.S. panel the network block produces a small forecast gain and the portfolio overlay has a better Sharpe ratio and smaller maximum drawdown than risk parity. In India the same feature block materially worsens the volatility forecast and the portfolio overlay underperforms risk parity.
 
-The project therefore does not treat directed network structure as automatically valuable. The main empirical result is that incremental forecasting information can exist without translating into a superior portfolio rule.
+The project therefore does not treat directed network structure as automatically valuable. Forecasting, structural description and portfolio usefulness are evaluated as separate claims.
 
 ## Repository layout
 
@@ -122,6 +122,9 @@ catboost_dagma/
 
 docs/
 ├── research_design.md
+├── literature_map.md
+├── robustness_protocol.md
+├── final_data_lock.md
 └── reproducibility.md
 ```
 
