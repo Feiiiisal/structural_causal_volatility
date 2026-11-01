@@ -188,7 +188,7 @@ def factor_frame_from_text(text: str) -> pd.DataFrame:
         return None
 
     market = pick(
-        ["mktrf", "rmrf", "marketpremium", "marketprem"],
+        ["mktrf", "rmrf", "mf", "marketpremium", "marketprem"],
         contains=["market", "premium"],
     )
     smb = pick(["smb"])
@@ -276,6 +276,15 @@ def save_market(market: str, output: Path):
     start = pd.Timestamp(START)
     end = pd.Timestamp(END)
     factors = factors.loc[(factors.index >= start) & (factors.index < end)]
+
+    print(
+        f"{market}: price returns {returns.index.min().date()} to {returns.index.max().date()} "
+        f"({len(returns)} rows, {returns.shape[1]} assets)"
+    )
+    print(
+        f"{market}: factors {factors.index.min().date()} to {factors.index.max().date()} "
+        f"({len(factors)} rows)"
+    )
 
     common = returns.index.intersection(factors.index)
     returns = returns.loc[common]
