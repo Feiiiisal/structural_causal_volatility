@@ -8,7 +8,7 @@ MScFE 690 Capstone Project
 
 Can a directed volatility network add useful risk information beyond factor exposure, correlation and conditional-dependence networks, and does that information improve out-of-sample volatility forecasts or portfolio risk control?
 
-The study compares developed- and emerging-market equity panels. The developed-market analysis uses large-cap U.S. equities. The emerging-market extension uses Indian equities. Both markets follow the same estimation and validation protocol.
+The study compares two fixed, balanced large-cap equity panels over 2016-2025: 20 U.S. stocks and 20 Indian stocks. Both markets follow the same estimation and validation protocol. The panels are designed for cross-market comparison rather than historical index replication.
 
 ## Research design
 
@@ -82,6 +82,26 @@ The portfolio experiment compares:
 
 Transaction costs are applied to active rebalancing rules.
 
+## Final empirical results
+
+The frozen, seeded 2016-2025 experiment is archived under [results/final](results/final).
+
+| Metric | U.S. | India |
+| --- | ---: | ---: |
+| Assets | 20 | 20 |
+| Daily observations | 2,513 | 2,469 |
+| Baseline volatility RMSE | 0.13895 | 0.11122 |
+| Network-augmented RMSE | 0.16349 | 0.15555 |
+| RMSE change | +17.66% | +39.86% |
+| Risk-parity Sharpe | 1.130 | 1.650 |
+| Network-overlay Sharpe | 1.122 | 0.976 |
+| Risk-parity max drawdown | -19.58% | -16.43% |
+| Network-overlay max drawdown | -19.46% | -20.91% |
+
+The directed-network features are not automatically useful just because they are different from correlation or precision-network features. In the final seeded run, adding them worsened out-of-sample volatility RMSE in both markets. The U.S. portfolio overlay reduced volatility and marginally improved maximum drawdown relative to risk parity, but did not improve Sharpe. In India, the network overlay underperformed risk parity on both Sharpe and maximum drawdown.
+
+These results are treated as findings, not as a reason to retune the model after seeing the test set.
+
 ## Repository layout
 
 ```text
@@ -116,7 +136,7 @@ export FF_DATA_PATH=/path/to/fama_french_daily.csv
 
 For the U.S. panel, Fama-French daily factors can also be downloaded through `pandas-datareader` by running the loader with `offline=False`.
 
-For India, use an India-specific factor file and a point-in-time equity universe. Do not apply U.S. Fama-French factors to the Indian panel.
+The final U.S. run uses Kenneth French daily factors. The Indian run uses the survivorship-adjusted daily factor series from IIM Ahmedabad. The price panels are fixed large-cap samples with continuous coverage; they are not reconstructed historical S&P 100 or Nifty 50 memberships.
 
 More detail is in [docs/research_design.md](docs/research_design.md).
 
