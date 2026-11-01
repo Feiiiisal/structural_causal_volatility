@@ -1,0 +1,168 @@
+name: Final empirical runs
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/final-results.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  run-market:
+    name: Run ${{ matrix.market }}
+    strategy:
+      fail-fast: false
+      matrix:
+        market: [us, india]
+    runs-on: ubuntu-latest
+    timeout-minutes: 330
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          pip install torch --index-url https://download.pytorch.org/whl/cpu
+          pip install -r requirements.txt
+          pip install yfinance requests
+          pip install -e . --no-deps
+
+      - name: Freeze market inputs
+        run: |
+          python catboost_dagma/scripts/freeze_market_data.py \
+            --market "${{ matrix.market }}" \
+            --output "frozen/${{ matrix.market }}"
+
+      - name: Run empirical pipeline
+        run: |
+          python catboost_dagma/scripts/run_experiment.py \
+            --market "${{ matrix.market }}" \
+            --run-name "${{ matrix.market }}" \
+            --returns-path "frozen/${{ matrix.market }}/returns.csv" \
+            --factor-path "frozen/${{ matrix.market }}/factors.csv" \
+            --start-date "2016-01-01" \
+            --end-date "2026-01-01" \
+            --window-size 252 \
+            --step-size 21 \
+            --workers 2 \
+            --output-dir "archive/results"
+
+      - name: Add frozen-data manifest
+        run: |
+          mkdir -p "archive/results/${{ matrix.market }}/data"
+          cp "frozen/${{ matrix.market }}/manifest.json" \
+             "archive/results/${{ matrix.market }}/data/manifest.json"
+
+      - name: Package full private archive
+        run: |
+          mkdir -p "archive/frozen/${{ matrix.market }}"
+          cp frozen/${{ matrix.market }}/* "archive/frozen/${{ matrix.market }}/"
+          tar -czf "final-${{ matrix.market }}.tar.gz" archive
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: final-${{ matrix.market }}
+          path: final-${{ matrix.market }}.tar.gz
+          retention-days: 90
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: publish-${{ matrix.market }}
+          path: archive/results/${{ matrix.market }}
+          retention-days: 90
+
+  combine:
+    name: Build final archive
+    needs: run-market
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: publish-*
+          path: downloaded
+          merge-multiple: false
+
+      - name: Assemble results
+        run: |
+          rm -rf results/final
+          mkdir -p results/final/us results/final/india
+          cp -R downloaded/publish-us/. results/final/us/
+          cp -R downloaded/publish-india/. results/final/india/
+
+      - name: Build cross-market summary
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          import pandas as pd
+
+          root = Path("results/final")
+          rows = []
+
+          for market in ("us", "india"):
+              metrics = json.loads((root / market / "metrics.json").read_text())
+              portfolio = metrics["portfolio"]
+              rows.append({
+                  "market": market,
+                  "assets": len(metrics["assets"]),
+                  "observations": metrics["observations"],
+                  "baseline_rmse": metrics["ablation"]["baseline"]["test_rmse"],
+                  "network_rmse": metrics["ablation"]["augmented"]["test_rmse"],
+                  "rmse_reduction_pct": metrics["ablation"]["improvement"]["rmse_reduction_pct"],
+                  "network_sharpe": portfolio["Causal_Contagion_Pruned"]["Sharpe_Ratio"],
+                  "risk_parity_sharpe": portfolio["Standard_Risk_Parity"]["Sharpe_Ratio"],
+                  "network_max_drawdown": portfolio["Causal_Contagion_Pruned"]["Max_Drawdown"],
+                  "risk_parity_max_drawdown": portfolio["Standard_Risk_Parity"]["Max_Drawdown"],
+              })
+
+          frame = pd.DataFrame(rows)
+          frame.to_csv(root / "cross_market_summary.csv", index=False)
+
+          lines = [
+              "# Final empirical results",
+              "",
+              "Frozen research window: 2016-2025.",
+              "",
+              "The U.S. and Indian runs use the same 252-day graph window, 21-day update cadence,",
+              "chronological factor residualization, five-day volatility target and out-of-sample split.",
+              "",
+              "## Cross-market summary",
+              "",
+              frame.to_markdown(index=False),
+              "",
+              "Each market folder contains the run metrics, tables, figures and the SHA-256 manifest",
+              "for the frozen inputs. The raw frozen data are retained in the private GitHub Actions",
+              "artifacts rather than committed to the repository.",
+              "",
+          ]
+          (root / "README.md").write_text("\n".join(lines), encoding="utf-8")
+          PY
+
+      - name: Commit final results
+        run: |
+          git config user.name "Feisal Ali Hassan"
+          git config user.email "137709020+Feiiiisal@users.noreply.github.com"
+          git add -f results/final
+          git commit -m "results: archive final US and India empirical runs"
+          git push
+
+      - name: Package combined archive
+        run: tar -czf structural-causal-volatility-final-results.tar.gz results/final
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: structural-causal-volatility-final-results
+          path: structural-causal-volatility-final-results.tar.gz
+          retention-days: 90
