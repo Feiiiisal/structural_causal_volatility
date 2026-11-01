@@ -194,6 +194,7 @@ jobs:
           git config user.email "137709020+Feiiiisal@users.noreply.github.com"
           git add -f results/final
           git commit -m "results: archive final US and India empirical runs"
+          git pull --rebase origin main
           git push
 
       - name: Package combined archive
