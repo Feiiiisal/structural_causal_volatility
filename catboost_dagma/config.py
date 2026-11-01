@@ -53,6 +53,7 @@ DAGMA_CONFIG = {
     "device": "cuda" if torch.cuda.is_available() else "cpu",
     "dtype": torch.float64,
     "n_workers": min(8, os.cpu_count() or 4),
+    "random_seed": 42,
 }
 
 CATBOOST_CONFIG = {
