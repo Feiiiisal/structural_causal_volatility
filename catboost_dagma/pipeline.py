@@ -24,7 +24,7 @@ class CatBoostDagmaPipeline:
         window_size: int = DAGMA_CONFIG["window_size"],
         step_size: int = DAGMA_CONFIG["step_size"],
         n_workers: int = DAGMA_CONFIG["n_workers"],
-        sp100_path: Optional[Union[str, Path]] = None,
+        returns_path: Optional[Union[str, Path]] = None,
         factor_path: Optional[Union[str, Path]] = None,
         offline: bool = True,
     ):
@@ -34,14 +34,14 @@ class CatBoostDagmaPipeline:
         self.window_size = window_size
         self.step_size = step_size
         self.n_workers = n_workers
-        self.sp100_path = Path(sp100_path) if sp100_path else None
+        self.returns_path = Path(returns_path) if returns_path else None
         self.factor_path = Path(factor_path) if factor_path else None
         self.offline = offline
 
     def run(self, verbose: bool = True) -> Dict[str, Any]:
         started = time.time()
 
-        loader = UnifiedDataLoader(self.sp100_path, self.factor_path, self.offline)
+        loader = UnifiedDataLoader(self.returns_path, self.factor_path, self.offline)
         returns, factors = loader.get_aligned_panel(
             self.assets, self.start_date, self.end_date
         )
