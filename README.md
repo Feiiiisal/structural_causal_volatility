@@ -104,6 +104,17 @@ The result is market dependent. In the U.S. panel the network block produces a s
 
 The project therefore does not treat directed network structure as automatically valuable. Forecasting, structural description and portfolio usefulness are evaluated as separate claims.
 
+## Reviewer-motivated robustness
+
+The frozen base specification is not re-selected after seeing these checks. Uncertainty and sensitivity results are archived under [results/robustness](results/robustness).
+
+- **U.S. forecast:** 0.96% RMSE reduction, but the 95% moving-block bootstrap interval is **-4.68% to 3.60%** and the HAC loss-difference test gives **p = 0.631**. The gain is not statistically stable.
+- **India forecast:** 22.63% RMSE deterioration, with a 95% interval of **-35.55% to -1.19%** and **p = 0.003**. Five of six forecast-relevant sensitivity variants also worsen RMSE; the training-period 15-stock composition check is the exception.
+- **U.S. portfolio:** network-minus-risk-parity Sharpe difference **+0.182**, 95% interval **[-0.490, 0.906]**. The point estimate is favourable, but uncertainty is wide. Seven of ten non-base portfolio variants have a higher network Sharpe than risk parity.
+- **India portfolio:** Sharpe difference **-0.750**, 95% interval **[-1.288, -0.239]**. The network Sharpe is below risk parity in every non-base sensitivity variant.
+
+The robustness exercise therefore narrows the claim. The directed network is a distinct structural representation, but predictive and portfolio value are market- and specification-dependent. The Indian underperformance is the most stable economic finding.
+
 ## Repository layout
 
 ```text
