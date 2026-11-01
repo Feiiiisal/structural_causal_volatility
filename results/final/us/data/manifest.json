@@ -48,16 +48,16 @@
   "factor_url": "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/ftp/F-F_Research_Data_Factors_daily_CSV.zip",
   "files": {
     "adjusted_close.csv": {
-      "bytes": 943871,
-      "sha256": "598251bfb25e924548d5c7e534467e2290bd2329360bea41a394fd5139407579"
+      "bytes": 944099,
+      "sha256": "a2975afa9ab9f6fb7a59c99f769c850d77f474dbd30f94f1706c8de72e54b048"
     },
     "factors.csv": {
       "bytes": 122746,
       "sha256": "fcec9f01f011730e5ddb0315a03de8315c09da3e2b089e1cd02625991f0d5a0f"
     },
     "returns.csv": {
-      "bytes": 1105499,
-      "sha256": "8a9eee7beabf1de7f29626cd7f1c5fb427e50acf180acecb9ba0c95d3c4457f1"
+      "bytes": 1105563,
+      "sha256": "a835c818f10f7c65ef3e721bd85aaacefc4ab175c3825a33458507e1e41411cd"
     }
   },
   "market": "us",
