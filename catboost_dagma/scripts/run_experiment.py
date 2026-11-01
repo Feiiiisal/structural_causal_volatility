@@ -66,6 +66,7 @@ def save_outputs(results, out_dir, args):
         "end_date": args.end_date,
         "window_size": args.window_size,
         "step_size": args.step_size,
+        "random_seed": DAGMA_CONFIG["random_seed"],
         "assets": list(results["returns_df"].columns),
         "observations": int(len(results["returns_df"])),
         "ablation": {
