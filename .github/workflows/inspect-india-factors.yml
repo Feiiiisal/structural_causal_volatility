@@ -1,0 +1,38 @@
+name: Inspect India factor archive
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/inspect-india-factors.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install requests pandas
+      - name: Inspect archive
+        run: |
+          python - <<'PY'
+          import io, zipfile, requests
+          url="https://faculty.iima.ac.in/iffm/Indian-Fama-French-Momentum/archive/2025-12.zip"
+          r=requests.get(url, timeout=90, headers={"User-Agent":"Mozilla/5.0"})
+          print("status",r.status_code,"bytes",len(r.content))
+          r.raise_for_status()
+          z=zipfile.ZipFile(io.BytesIO(r.content))
+          for name in z.namelist():
+              print("\nFILE", name)
+              if name.lower().endswith(".csv"):
+                  raw=z.read(name)
+                  text=raw.decode("utf-8-sig", errors="replace")
+                  lines=text.splitlines()
+                  print("\n".join(lines[:8]))
+                  print("...")
+                  print("\n".join(lines[-5:]))
+          PY
