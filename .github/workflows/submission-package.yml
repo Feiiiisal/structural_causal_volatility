@@ -1,0 +1,110 @@
+name: Build submission source package
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/submission-package.yml"
+  workflow_dispatch:
+
+permissions:
+  actions: read
+  contents: read
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Download exact frozen-data artifacts from final empirical run
+        uses: actions/download-artifact@v4
+        with:
+          run-id: 41325421793
+          pattern: final-*
+          path: _final_artifacts
+          github-token: ${{ github.token }}
+
+      - name: Assemble source and reproducibility package
+        run: |
+          set -euo pipefail
+          mkdir -p submission/source submission/frozen_data submission/results
+
+          rsync -a             --exclude='.git'             --exclude='submission'             --exclude='_final_artifacts'             ./ submission/source/
+
+          cp -R results/final/. submission/results/
+
+          mkdir -p _unpack_us _unpack_india
+          unzip -q _final_artifacts/final-us/*.zip -d _unpack_us || true
+          unzip -q _final_artifacts/final-india/*.zip -d _unpack_india || true
+
+          # The downloaded artifacts contain tar.gz files.
+          US_TAR=$(find _final_artifacts/final-us -name '*.tar.gz' -print -quit)
+          IN_TAR=$(find _final_artifacts/final-india -name '*.tar.gz' -print -quit)
+          if [ -z "$US_TAR" ] || [ -z "$IN_TAR" ]; then
+            echo "Expected frozen-data tarballs were not found." >&2
+            find _final_artifacts -maxdepth 3 -type f -print
+            exit 1
+          fi
+
+          tar -xzf "$US_TAR" -C _unpack_us
+          tar -xzf "$IN_TAR" -C _unpack_india
+          cp -R _unpack_us/archive/frozen/us submission/frozen_data/us
+          cp -R _unpack_india/archive/frozen/india submission/frozen_data/india
+
+          cat > submission/SUBMISSION_README.md <<EOF
+          # MScFE 690 Capstone Source and Results Package
+
+          Project: Structural Causal Volatility Networks for Adaptive Risk Management in Equity Portfolios: Evidence Across Developed and Emerging Markets
+
+          Authors:
+          - Halkano Molu Guracha
+          - Feisal Ali Hassan
+          - Tushar Gahlot
+
+          Repository: https://github.com/Feiiiisal/structural_causal_volatility
+          Source commit: ${GITHUB_SHA}
+          Final empirical workflow run: 41325421793
+
+          ## Contents
+
+          - source/: complete source-code snapshot at the submission commit
+          - frozen_data/us/: exact frozen U.S. inputs used for the reported run
+          - frozen_data/india/: exact frozen Indian inputs used for the reported run
+          - results/: final tables, figures, metrics and data manifests
+
+          ## Reproduce
+
+          python -m venv .venv
+          source .venv/bin/activate
+          python -m pip install --upgrade pip
+          pip install -r source/requirements.txt
+          pip install -e source --no-deps
+
+          python source/catboost_dagma/scripts/run_experiment.py \
+            --market us \
+            --run-name us \
+            --returns-path frozen_data/us/returns.csv \
+            --factor-path frozen_data/us/factors.csv \
+            --start-date 2016-01-01 \
+            --end-date 2026-01-01 \
+            --window-size 252 \
+            --step-size 21 \
+            --workers 2 \
+            --output-dir reproduced_results
+
+          Replace us paths with india paths for the Indian run.
+
+          Random seed: 42.
+          The SHA-256 input hashes are recorded in each market's manifest.json.
+          EOF
+
+          (cd submission && zip -qr ../MScFE_690_Capstone_Source_and_Results.zip .)
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: MScFE-690-Capstone-Source-and-Results
+          path: MScFE_690_Capstone_Source_and_Results.zip
+          retention-days: 90
