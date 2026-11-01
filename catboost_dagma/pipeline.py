@@ -69,6 +69,7 @@ class CatBoostDagmaPipeline:
                 "max_iter": 150,
                 "lambda1": 0.02,
                 "lr": 0.005,
+                "random_seed": DAGMA_CONFIG["random_seed"],
                 "verbose": False,
             },
             n_workers=self.n_workers,
