@@ -114,6 +114,7 @@ The frozen base specification is not re-selected after seeing these checks. Unce
 - **India forecast:** 22.40% RMSE deterioration, with a 95% interval of **-33.88% to -6.96%** and **p = 0.015**. The augmented model remains worse than the baseline in the current frozen experiment.
 - **U.S. portfolio:** network-minus-inverse-volatility Sharpe difference **+0.106**, 95% interval **[-0.578, 0.802]**. The sample point estimate is favourable, but its uncertainty interval contains zero.
 - **India portfolio:** Sharpe difference **-0.776**, 95% interval **[-1.262, -0.287]**. The network portfolio underperforms the inverse-volatility benchmark in the base run.
+- **Sensitivity on the 23 November data:** All six U.S. forecast-related non-base variants have negative RMSE improvement, despite the positive base result. In India, five of the six forecast-related variants worsen RMSE; the 15-stock variant improves RMSE by 15.58%, although its baseline and network R² values remain negative. The Indian network portfolio has lower Sharpe than the benchmark in every non-base portfolio variant.
 
 The robustness exercise therefore narrows the claim. The directed network is a distinct structural representation, but predictive and portfolio value are market- and specification-dependent. The Indian underperformance is the most stable economic finding.
 
