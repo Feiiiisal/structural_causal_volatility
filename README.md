@@ -84,21 +84,23 @@ Transaction costs are applied to active rebalancing rules.
 
 ## Final empirical results
 
-The frozen, seeded 2016-2025 experiment is archived under [results/final](results/final). The submission data snapshot is locked to GitHub Actions run **41350658046**; later robustness checks use those exact files rather than redownloading market history.
+The frozen, seeded 2016-2025 experiment is archived under [results/final](results/final). The submission data snapshot is locked to GitHub Actions run **45203001872**; later robustness checks use those exact files rather than redownloading market history.
 
 | Metric | U.S. | India |
 | --- | ---: | ---: |
 | Assets | 20 | 20 |
 | Daily observations | 2,513 | 2,469 |
 | Baseline volatility RMSE | 0.13895 | 0.11122 |
-| Network-augmented RMSE | 0.13762 | 0.13639 |
-| RMSE change | 0.96% improvement | 22.63% deterioration |
+| Network-augmented RMSE | 0.13690 | 0.13614 |
+| RMSE change | 1.48% improvement | 22.40% deterioration |
 | Baseline OOS R² | 0.173 | -0.197 |
-| Network OOS R² | 0.189 | -0.801 |
-| Risk-parity Sharpe | 1.130 | 1.650 |
-| Network-overlay Sharpe | 1.312 | 0.900 |
-| Risk-parity max drawdown | -19.59% | -16.43% |
-| Network-overlay max drawdown | -12.39% | -19.48% |
+| Network OOS R² | 0.198 | -0.794 |
+| Risk-parity Sharpe | 1.131 | 1.650 |
+| Network-overlay Sharpe | 1.237 | 0.874 |
+| Risk-parity max drawdown | -19.58% | -16.43% |
+| Network-overlay max drawdown | -16.33% | -21.64% |
+
+The final results use the 23 November 2026 frozen price/return snapshot; the previous 1 November snapshot differs. Do not mix result tables or robustness intervals between runs.
 
 The result is market dependent. In the U.S. panel the network block produces a small forecast gain and the portfolio overlay has a better Sharpe ratio and smaller maximum drawdown than risk parity. In India the same feature block materially worsens the volatility forecast and the portfolio overlay underperforms risk parity.
 
@@ -108,10 +110,10 @@ The project therefore does not treat directed network structure as automatically
 
 The frozen base specification is not re-selected after seeing these checks. Uncertainty and sensitivity results are archived under [results/robustness](results/robustness).
 
-- **U.S. forecast:** 0.96% RMSE reduction, but the 95% moving-block bootstrap interval is **-4.68% to 3.60%** and the HAC loss-difference test gives **p = 0.631**. The gain is not statistically stable.
-- **India forecast:** 22.63% RMSE deterioration, with a 95% interval of **-35.55% to -1.19%** and **p = 0.003**. Five of six forecast-relevant sensitivity variants also worsen RMSE; the training-period 15-stock composition check is the exception.
-- **U.S. portfolio:** network-minus-risk-parity Sharpe difference **+0.182**, 95% interval **[-0.490, 0.906]**. The point estimate is favourable, but uncertainty is wide. Seven of ten non-base portfolio variants have a higher network Sharpe than risk parity.
-- **India portfolio:** Sharpe difference **-0.750**, 95% interval **[-1.288, -0.239]**. The network Sharpe is below risk parity in every non-base sensitivity variant.
+- **U.S. forecast:** 1.48% RMSE reduction. The 95% moving-block bootstrap interval is **+0.72% to +2.52%**; the HAC loss-difference test gives **p = 0.092**. The two uncertainty procedures are not equally decisive at the 5% level.
+- **India forecast:** 22.40% RMSE deterioration, with a 95% interval of **-33.88% to -6.96%** and **p = 0.015**. The augmented model remains worse than the baseline in the current frozen experiment.
+- **U.S. portfolio:** network-minus-inverse-volatility Sharpe difference **+0.106**, 95% interval **[-0.578, 0.802]**. The sample point estimate is favourable, but its uncertainty interval contains zero.
+- **India portfolio:** Sharpe difference **-0.776**, 95% interval **[-1.262, -0.287]**. The network portfolio underperforms the inverse-volatility benchmark in the base run.
 
 The robustness exercise therefore narrows the claim. The directed network is a distinct structural representation, but predictive and portfolio value are market- and specification-dependent. The Indian underperformance is the most stable economic finding.
 
