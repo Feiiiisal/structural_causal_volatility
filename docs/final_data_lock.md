@@ -1,8 +1,8 @@
 # Frozen final data snapshot
 
-The empirical results reported in the final manuscript use the frozen market inputs produced by GitHub Actions run **41350658046**.
+The empirical results reported in the final manuscript use the frozen market inputs produced by GitHub Actions run **45203001872**.
 
-This run is the data source of truth for the submission. Reviewer-motivated robustness analyses must use these archived inputs rather than downloading prices again.
+This run is the data source of truth for the submission. The earlier run 41350658046 used different frozen prices and returns; its forecast, portfolio, and robustness values must not be mixed with those of the new run. Reviewer-motivated robustness analyses must use these archived inputs rather than downloading prices again.
 
 ## U.S. panel
 
@@ -14,9 +14,9 @@ This run is the data source of truth for the submission. Reviewer-motivated robu
 
 SHA-256:
 
-- adjusted_close.csv: `f4f32620134a1b20c57f2bdb66473b466dd6dd9806c1c56c0b582a754b873be4`
-- returns.csv: `293f46745abe5dfb55890575259045d8305ead3764fab6f4bfacf0797db89147`
-- factors.csv: `fcec9f01f011730e5ddb0315a03de8315c09da3e2b089e1cd02625991f0d5a0f`
+- adjusted_close.csv: `93ead7b29c0ba51eb3527e55073ea5b2edecafecad23fa25def682471301902c`
+- returns.csv: `a37ec8c17573d6a69b48bd584e7496460897c449596e63f35c6775413eaaf65a`
+- factors.csv: `08c447fc1a2afd8468631e808116e2877d0fc2ffe6fdfa071670533adaaf02df`
 
 ## Indian panel
 
@@ -32,4 +32,4 @@ SHA-256:
 - returns.csv: `90d11903fbeb73ad9ffe014facedf89ce84a4d66e0e098d19a4ec5cf71d6c5d0`
 - factors.csv: `08c447fc1a2afd8468631e808116e2877d0fc2ffe6fdfa071670533adaaf02df`
 
-The raw frozen files are retained in the private workflow artifacts and in the final submission source/results ZIP. Live redownloads are not used for the uncertainty or sensitivity results.
+The raw frozen files are retained in the private workflow artifacts and in the final submission source/results ZIP. The robustness and sensitivity results must be generated from the same 23 November frozen data. Live redownloads are not used for the final analysis.
