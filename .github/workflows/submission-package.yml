@@ -9,6 +9,8 @@ on:
       - "docs/robustness_protocol.md"
       - "docs/literature_map.md"
       - "docs/research_design.md"
+      - "docs/final_data_lock.md"
+      - "README.md"
   workflow_dispatch:
 
 permissions:
@@ -26,7 +28,7 @@ jobs:
       - name: Download frozen data from locked empirical run
         uses: actions/download-artifact@v4
         with:
-          run-id: 41350658046
+          run-id: 45203001872
           pattern: final-*
           path: _final_artifacts
           github-token: ${{ github.token }}
@@ -78,8 +80,8 @@ jobs:
 
           Repository: https://github.com/Feiiiisal/structural_causal_volatility
           Source commit: ${GITHUB_SHA}
-          Locked empirical workflow run: 41350658046
-          Robustness workflow run: 41351232536
+          Locked empirical workflow run: 45203001872
+          Robustness workflow run: TO_BE_REGENERATED_FROM_LATEST_DATA
 
           ## Contents
 
