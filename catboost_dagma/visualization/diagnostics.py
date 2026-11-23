@@ -35,13 +35,13 @@ def plot_ff3_residualization_audit(
     fig, axes = plt.subplots(2, 2, figsize=(12, 8))
     asset = raw_returns.columns[0]
 
-    sns.kdeplot(raw_returns[asset], ax=axes[0, 0], label="raw")
-    sns.kdeplot(residuals_df[asset], ax=axes[0, 0], label="residual")
+    sns.kdeplot(raw_returns[asset], ax=axes[0, 0], label="raw", color="C0")
+    sns.kdeplot(residuals_df[asset], ax=axes[0, 0], label="residual", color="C1")
     axes[0, 0].set_title(f"{asset}: returns before and after factor adjustment")
     axes[0, 0].legend()
 
     if "Mkt-RF" in exposure_df:
-        sns.histplot(exposure_df["Mkt-RF"], ax=axes[0, 1], bins=15)
+        sns.histplot(exposure_df["Mkt-RF"], ax=axes[0, 1], bins=15, color="C0")
         axes[0, 1].set_title("Market beta")
 
     if "R2" in exposure_df:
@@ -78,11 +78,12 @@ def plot_network_comparison(
         y="Comparison",
         x="Pearson_r",
         ax=axes[0],
+        color="C0",
     )
     axes[0].axvline(0, linewidth=0.8)
     axes[0].set_title("Network feature correlation")
 
-    sns.barplot(data=vif_df, y="Feature", x="VIF", ax=axes[1])
+    sns.barplot(data=vif_df, y="Feature", x="VIF", ax=axes[1], color="C0")
     axes[1].axvline(5, linestyle="--", linewidth=1)
     axes[1].set_title("Variance inflation factor")
 
@@ -138,6 +139,7 @@ def plot_catboost_ablation_and_importance(
         y="feature",
         x="importance",
         ax=axes[1],
+        color="C0",
     )
     axes[1].set_title("CatBoost feature importance")
 
