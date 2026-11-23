@@ -6,15 +6,15 @@ These analyses respond to peer-review requests. They do not replace or re-select
 
 | Market | RMSE reduction | 95% block-bootstrap CI | HAC loss-difference p-value |
 | --- | ---: | ---: | ---: |
-| US | 0.96% | [-4.68%, 3.60%] | 0.6305 |
-| INDIA | -22.63% | [-35.55%, -1.19%] | 0.0031 |
+| US | 1.48% | [0.72%, 2.52%] | 0.0919 |
+| INDIA | -22.40% | [-33.88%, -6.96%] | 0.0145 |
 
 ## Portfolio uncertainty
 
 | Market | Sharpe difference (network - risk parity) | 95% CI | MDD difference | 95% CI |
 | --- | ---: | ---: | ---: | ---: |
-| US | 0.182 | [-0.490, 0.906] | 7.19 pp | [-5.04, 16.20] pp |
-| INDIA | -0.750 | [-1.288, -0.239] | -3.04 pp | [-16.87, 3.42] pp |
+| US | 0.106 | [-0.578, 0.802] | 3.25 pp | [-6.82, 15.42] pp |
+| INDIA | -0.776 | [-1.262, -0.287] | -5.21 pp | [-16.60, 3.41] pp |
 
 ## Sensitivity files
 
