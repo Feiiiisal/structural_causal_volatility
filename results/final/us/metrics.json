@@ -35,20 +35,20 @@
   "ablation": {
     "target": "forward_volatility",
     "baseline": {
-      "train_rmse": 0.1569024669243089,
-      "test_rmse": 0.13895351383539267,
-      "test_mae": 0.09041128698890977,
-      "test_r2": 0.173355373930404
+      "train_rmse": 0.15690248817565572,
+      "test_rmse": 0.13895358809966216,
+      "test_mae": 0.09041148289884969,
+      "test_r2": 0.17335441528353768
     },
     "augmented": {
-      "train_rmse": 0.06242405617613639,
-      "test_rmse": 0.13761873057776322,
-      "test_mae": 0.0903813360071255,
-      "test_r2": 0.18916054221022627
+      "train_rmse": 0.08706874682374309,
+      "test_rmse": 0.13689629120589167,
+      "test_mae": 0.09021002019286321,
+      "test_r2": 0.19765124374906995
     },
     "improvement": {
-      "rmse_reduction_pct": 0.9605969800883658,
-      "delta_r2": 0.015805168279822257
+      "rmse_reduction_pct": 1.4805640659634685,
+      "delta_r2": 0.024296828465532272
     }
   },
   "portfolio": {
@@ -60,20 +60,20 @@
       "Calmar_Ratio": 0.933
     },
     "Standard_Risk_Parity": {
-      "Annualized_Return": 16.16,
+      "Annualized_Return": 16.17,
       "Annualized_Vol": 14.3,
-      "Sharpe_Ratio": 1.13,
-      "Max_Drawdown": -19.59,
-      "Calmar_Ratio": 0.825
+      "Sharpe_Ratio": 1.131,
+      "Max_Drawdown": -19.58,
+      "Calmar_Ratio": 0.826
     },
     "Causal_Contagion_Pruned": {
-      "Annualized_Return": 14.76,
-      "Annualized_Vol": 11.25,
-      "Sharpe_Ratio": 1.312,
-      "Max_Drawdown": -12.39,
-      "Calmar_Ratio": 1.191
+      "Annualized_Return": 14.03,
+      "Annualized_Vol": 11.34,
+      "Sharpe_Ratio": 1.237,
+      "Max_Drawdown": -16.33,
+      "Calmar_Ratio": 0.859
     }
   },
-  "elapsed_seconds": 118.79214549064636,
-  "created_utc": "2026-11-01T21:14:09.017146+00:00"
+  "elapsed_seconds": 77.67585515975952,
+  "created_utc": "2026-11-23T15:16:57.826628+00:00"
 }
