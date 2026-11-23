@@ -11,6 +11,7 @@ on:
       - "docs/research_design.md"
       - "docs/final_data_lock.md"
       - "README.md"
+      - "catboost_dagma/scripts/validate_submission.py"
   workflow_dispatch:
 
 permissions:
@@ -68,6 +69,8 @@ jobs:
           cp -R _unpack_us/archive/frozen/us submission/frozen_data/us
           cp -R _unpack_india/archive/frozen/india submission/frozen_data/india
 
+          python submission/source/catboost_dagma/scripts/validate_submission.py --base-dir submission
+
           cat > submission/SUBMISSION_README.md <<EOF
           # MScFE 690 Capstone Source and Results Package
 
@@ -81,7 +84,7 @@ jobs:
           Repository: https://github.com/Feiiiisal/structural_causal_volatility
           Source commit: ${GITHUB_SHA}
           Locked empirical workflow run: 45203001872
-          Robustness workflow run: TO_BE_REGENERATED_FROM_LATEST_DATA
+          Robustness workflow run: 45287815568
 
           ## Contents
 
